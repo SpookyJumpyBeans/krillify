@@ -86,23 +86,30 @@ async function handle(message, sender, controller) {
   const key = 'q:' + normalize(prompt);
   const excluded = Array.isArray(message.excluded) ? message.excluded.filter(x => typeof x === 'string').slice(0, 2500) : [];
   let pool = cleanCandidates(pools[key]?.answers || starterBanks[normalize(prompt)]);
-  let picks = takeThree(pool, history, excluded);
+  // The overlay asks only for the slots it has free, so a used answer is replaced in place.
+  const want = Number.isInteger(message.want) ? Math.min(3, Math.max(1, message.want)) : 3;
+  let picks = takeThree(pool, history, excluded, want);
   let source = pools[key]?.source || (starterBanks[normalize(prompt)] ? 'Starter bank · acceptance unverified' : 'cache');
   let fresh = [];
-  // A partial cached batch is useful immediately; do not hold it behind a slow refill.
-  if (!picks.length && settings.apiKey) {
+  // A new prompt shows a partial cached batch at once; a top-up request may wait for the AI
+  // because the answers already on screen stay visible meanwhile.
+  if (settings.apiKey && (!picks.length || (message.topUp && picks.length < want))) {
     const retryStarted = Date.now();
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try { fresh = await generate(prompt, settings, [...history, ...pool.flatMap(x => [x.answer, ...x.aliases]), ...excluded].slice(-2500), controller); break; }
-      catch (error) {
-        if (!error.retryable || attempt || controller.signal.aborted || Date.now()-retryStarted > 1500) throw error;
-        await new Promise(resolve => setTimeout(resolve, 750));
+    try {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try { fresh = await generate(prompt, settings, [...history, ...pool.flatMap(x => [x.answer, ...x.aliases]), ...excluded].slice(-2500), controller); break; }
+        catch (error) {
+          if (!error.retryable || attempt || controller.signal.aborted || Date.now()-retryStarted > 1500) throw error;
+          await new Promise(resolve => setTimeout(resolve, 750));
+        }
       }
+    } catch (error) { if (!picks.length || controller.signal.aborted) throw error; }
+    if (fresh.length) {
+      // Retain the rarest cached entries for reuse in later games, but leave room for new answers.
+      pool = cleanCandidates([...pool.slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
+      picks = takeThree(pool, history, excluded, want);
+      source = 'AI estimate';
     }
-    // Retain the rarest cached entries for reuse in later games, but leave room for new answers.
-    pool = cleanCandidates([...pool.slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
-    picks = takeThree(pool, history, excluded);
-    source = 'AI estimate';
   }
   if (!picks.length) throw new Error(settings.apiKey ? 'No unused answers available for this prompt. Try another prompt or reset history in Settings.' : 'No answer bank for this prompt. Add an API key in Settings for automatic suggestions.');
   return serial(async () => {
@@ -113,12 +120,12 @@ async function handle(message, sender, controller) {
     const latestPools = latest.pools || {};
     const latestHistory = latest.games?.[scope]?.used || [];
     if (fresh.length) pool = cleanCandidates([...(latestPools[key]?.answers || []).slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
-    picks = takeThree(pool, latestHistory, excluded);
+    picks = takeThree(pool, latestHistory, excluded, want);
     if (!picks.length) throw new Error('No unused answers left in this batch. Click Retry.');
     latestPools[key] = {prompt, answers: pool, source, updated: Date.now()};
     const entries = Object.entries(latestPools).sort((a,b) => b[1].updated - a[1].updated).slice(0, 300);
     await chrome.storage.local.set({pools: Object.fromEntries(entries)});
-    return {answers: picks, source, count: latestHistory.length};
+    return {answers: picks, source, count: latestHistory.length, more: picks.length < want && !message.topUp && !!settings.apiKey};
   });
 }
 

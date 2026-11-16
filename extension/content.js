@@ -9,8 +9,8 @@
   document.documentElement.append(host);
   const $ = selector => root.querySelector(selector);
   let current = '', generation = 0, busy = false, enabled = false, picking = false, custom = null;
-  let lastStatus = 0, failure = false, lastSubmit = '';
-  let game = '', lifecycle = null, roomPath = '', shown = [];
+  let lastStatus = 0, failure = false, lastSubmit = '', lastReplace = true;
+  let game = '', lifecycle = null, roomPath = '';
   const usedInRoom = new Set();
   const bubbleVersions = new WeakMap();
   let replacementTimer;
@@ -23,16 +23,25 @@
     liveRoom = r; syncGame();
     const fresh = r.answers.slice(0,2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && !usedInRoom.has(answerKey(x.answer)));
     for (const item of fresh) usedInRoom.add(answerKey(item.answer));
-    let removed = false;
-    for (const button of $('#choices').querySelectorAll('.pick')) if (button.answerKeys?.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
+    const removed = dropUsed();
     if (fresh.length) {
       const scope = game;
-      send({type:'remember', game:scope, answers:fresh.map(x=>x.answer)}).then(() => { if (removed && game === scope && !busy && enabled && current) suggest(); });
+      send({type:'remember', game:scope, answers:fresh.map(x=>x.answer)}).then(() => { if (removed && game === scope) refill(); });
     }
     scan();
   });
   const answerKey = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   window.postMessage({channel:'krillify-request-state'}, location.origin);
+  const cards = () => [...$('#choices').querySelectorAll('.pick')];
+  const renumber = () => cards().forEach((button, index) => { button.querySelector('b').textContent = `${index + 1}. ${button.answer}`; });
+  // Remove only the cards that were used; the rest stay where they are.
+  function dropUsed() {
+    let removed = false;
+    for (const button of cards()) if (button.answerKeys.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
+    if (removed) renumber();
+    return removed;
+  }
+  const refill = () => { if (current && enabled && game && cards().length < 3) suggest({replace: false}); };
   const alreadyUsed = item => [item.answer, ...(item.aliases || [])].some(value => usedInRoom.has(answerKey(value)));
   function trackAcceptedAnswers() {
     if (!game || lifecycle?.stage !== 'round') return;
@@ -50,17 +59,14 @@
     }
     if (!answers.length) return;
     const scope = game;
-    let removed = false;
-    for (const button of $('#choices').querySelectorAll('.pick')) {
-      if (button.answerKeys?.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
-    }
+    const removed = dropUsed();
     const saved = send({type:'remember', game:scope, answers});
     if (removed) {
-      $('#status').textContent = 'An answer was used in this game — replacing it…';
+      $('#status').textContent = 'An answer was used in this game. Filling its slot…';
       clearTimeout(replacementTimer);
       replacementTimer = setTimeout(async () => {
         await saved;
-        if (game === scope && current && enabled && !busy) suggest();
+        if (game === scope) refill();
       }, 150);
     }
   }
@@ -72,7 +78,7 @@
       lifecycle = {id:'server:' + liveRoom.game, stage:liveRoom.phase, category:0};
       if (next === game) return false;
       if (game) for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
-      game = next; usedInRoom.clear(); shown = []; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren(); return true;
+      game = next; usedInRoom.clear(); lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren(); return true;
     }
     const gameRoot = document.querySelector('.pf-root');
     if (!gameRoot || gameRoot.hasAttribute('data-loading')) return false;
@@ -100,7 +106,7 @@
       for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
     }
     usedInRoom.clear(); clearTimeout(replacementTimer);
-    game = next; shown = []; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren();
+    game = next; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren();
     return true;
   }
   async function send(data) {
@@ -127,43 +133,56 @@
       .find(el => visible(el) && !el.disabled && !/chat|name|code/i.test([el.placeholder, el.getAttribute('aria-label')].join(' ')));
   }
   function updateButtons() { $('#next').disabled = !current || busy || !enabled; $('#next').textContent = failure ? 'Retry' : 'Next 3'; }
-  async function suggest(excluded = []) {
+  function makeCard(item) {
+    const button = document.createElement('button'); button.className = 'pick';
+    button.answer = item.answer;
+    button.answerTexts = [item.answer, ...(item.aliases || [])];
+    button.answerKeys = button.answerTexts.map(answerKey);
+    const title = document.createElement('b');
+    const note = document.createElement('small'); note.textContent = item.note;
+    button.append(title, note);
+    button.addEventListener('click', () => {
+      if (alreadyUsed(item)) { button.remove(); renumber(); $('#status').textContent = 'That answer was already used. Choose another.'; refill(); return; }
+      const input = gameInput();
+      if (!input) { $('#status').textContent = 'Answer box isn’t available yet. Wait for your turn.'; return; }
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(input, item.answer); input.dispatchEvent(new Event('input', {bubbles: true})); input.focus();
+      $('#status').textContent = 'Filled. Press Enter in the game to submit.';
+    });
+    return button;
+  }
+  // replace: swap the whole bank (new prompt, Next 3). Otherwise only fill the empty slots
+  // and leave the cards already shown untouched.
+  async function suggest({replace = true, skipShown = false} = {}) {
     if (!current || !enabled || !game) return;
+    const keep = replace ? [] : cards();
+    const need = 3 - keep.length;
+    if (need <= 0) return;
     const version = ++generation, prompt = current;
-    busy = true; failure = false; updateButtons(); $('#choices').replaceChildren();
-    $('#status').textContent = 'Finding obscure answers…';
+    lastReplace = replace;
+    busy = true; failure = false; updateButtons();
+    $('#status').textContent = replace ? 'Finding obscure answers…' : 'Filling the empty slot…';
+    const avoid = (replace ? (skipShown ? cards() : []) : keep).flatMap(button => button.answerTexts);
     let result;
-    try { result = await send({type: 'suggest', game, prompt, excluded: [...excluded, ...usedInRoom]}); }
+    try { result = await send({type: 'suggest', game, prompt, want: need, topUp: !replace, excluded: [...avoid, ...usedInRoom]}); }
     catch { result = {error: 'Could not load suggestions. Click Retry.'}; }
     if (version !== generation) return;
     busy = false;
     if (result?.error || !Array.isArray(result?.answers)) {
       failure = true; $('#status').textContent = result?.error || 'No response. Retry.'; updateButtons(); return;
     }
-    const available = result.answers.filter(item => !alreadyUsed(item));
-    shown = available.map(item => item.answer);
-    for (const [index, item] of available.entries()) {
-      const button = document.createElement('button'); button.className = 'pick';
-      button.answerKeys = [item.answer, ...(item.aliases || [])].map(answerKey);
-      const title = document.createElement('b'); title.textContent = `${index + 1}. ${item.answer}`;
-      const note = document.createElement('small'); note.textContent = item.note;
-      button.append(title, note);
-      button.addEventListener('click', () => {
-        if (alreadyUsed(item)) { button.remove(); $('#status').textContent = 'That answer was already used. Choose another.'; return; }
-        const input = gameInput();
-        if (!input) { $('#status').textContent = 'Answer box isn’t available yet. Wait for your turn.'; return; }
-        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-        setter.call(input, item.answer); input.dispatchEvent(new Event('input', {bubbles: true})); input.focus();
-        $('#status').textContent = 'Filled — press Enter in the game to submit.';
-      });
-      $('#choices').append(button);
-    }
-    $('#status').textContent = `${result.source || 'Cached suggestions'} · ${available.length} unused option${available.length === 1 ? '' : 's'}`;
+    const onScreen = new Set((replace ? [] : cards()).flatMap(button => button.answerKeys));
+    const available = result.answers.filter(item => !alreadyUsed(item) && ![item.answer, ...(item.aliases || [])].some(value => onScreen.has(answerKey(value))));
+    if (replace) $('#choices').replaceChildren();
+    for (const item of available.slice(0, Math.max(0, 3 - cards().length))) $('#choices').append(makeCard(item));
+    renumber();
+    const count = cards().length;
+    $('#status').textContent = `${result.source || 'Cached suggestions'} · ${count} unused option${count === 1 ? '' : 's'}`;
     updateButtons();
-    if (available.length < result.answers.length) {
-      // A pass can arrive during generation; discard it even if the reply is stale.
+    if (count < 3 && (available.length < result.answers.length || result.more)) {
+      // An answer was used while this request ran, or the cache was short: top up the free slots.
       clearTimeout(replacementTimer);
-      replacementTimer = setTimeout(() => { if (!busy && current === prompt) suggest(); }, 150);
+      replacementTimer = setTimeout(() => { if (!busy && current === prompt) refill(); }, 150);
     }
   }
   async function scan() {
@@ -172,7 +191,7 @@
     if (Date.now() - lastStatus > 2500) {
       lastStatus = Date.now();
       const status = await send({type: 'status', game});
-      if (status?.error) { if (!busy && !shown.length) $('#status').textContent = status.error; return; }
+      if (status?.error) { if (!busy && !cards().length) $('#status').textContent = status.error; return; }
       const wasEnabled = enabled; enabled = !!status?.enabled;
       if (!enabled) {
         if (wasEnabled) { ++generation; busy = false; $('#choices').replaceChildren(); }
@@ -190,7 +209,7 @@
     }
     host.style.display = /^\/party(?:\/|$)/.test(location.pathname) ? '' : 'none';
   }
-  $('#next').onclick = () => suggest(failure ? [] : shown);
+  $('#next').onclick = () => failure && !lastReplace ? refill() : suggest({skipShown: !failure});
   $('#settings').onclick = () => send({type: 'settings'});
   $('#min').onclick = () => { const collapsed = $('section').classList.toggle('fold'); $('#min').textContent = collapsed ? '+' : '−'; };
   $('#pick').onclick = () => { picking = true; $('#status').textContent = 'Click the prompt text on the game page.'; };
@@ -202,9 +221,15 @@
   const rememberInput = () => {
     const input = gameInput(), answer = input?.value?.trim();
     if (!answer || !game || answer === lastSubmit) return;
-    lastSubmit = answer; send({type: 'remember', game, answers: [answer]});
-    // Prepare a fresh set after our own attempt, ready before the puffer comes back.
-    if (enabled && current) setTimeout(() => { if (!busy) suggest(); }, 150);
+    lastSubmit = answer;
+    const scope = game, saved = send({type: 'remember', game, answers: [answer]});
+    // Submitting a bank answer removes just that card and fills its slot. A typed answer
+    // that isn't in the bank leaves the bank alone.
+    const key = answerKey(answer);
+    const card = cards().find(button => button.answerKeys.includes(key));
+    if (!card) return;
+    usedInRoom.add(key); card.remove(); renumber();
+    saved.then(() => { if (game === scope) refill(); });
   };
   document.addEventListener('keydown', event => { if (event.key === 'Enter' && event.target === gameInput()) rememberInput(); }, true);
   document.addEventListener('submit', event => { if (event.target.contains(gameInput())) rememberInput(); }, true);

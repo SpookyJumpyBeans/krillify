@@ -59,7 +59,7 @@ No build step, package install, or server is needed.
 - **Refreshes in the same tab** retain the game identity. Tabs observing the same server game share its used list; the DOM fallback uses a per-tab identity.
 - **Pick prompt** lets you click the category text if automatic detection misses it.
 
-**Opponents' accepted answers are tracked automatically.** Krillify reads accepted answers from game snapshots/patches and watches accepted-answer bubbles, adds them to the same game-scoped exclusion list, removes matching visible suggestions (including known aliases), and requests replacements. It also checks answers that arrive while a suggestion request is running. Typing previews, rejected guesses and chat do not count as opponent answers.
+**Opponents' accepted answers are tracked automatically.** Krillify reads accepted answers from game snapshots/patches and watches accepted-answer bubbles, adds them to the same game-scoped exclusion list, removes only the matching visible suggestions (including known aliases), and fills each freed slot so three answers stay on screen. It also checks answers that arrive while a suggestion request is running. Typing previews, rejected guesses and chat do not count as opponent answers.
 
 Structured tracking can recover earlier accepted answers included in the server event history when you join. If structured tracking is unavailable, tracking covers accepted bubbles rendered while the helper runs. A server history that has already been truncated cannot be recovered. Known aliases are matched; unknown alternate names can still slip through.
 
@@ -87,7 +87,7 @@ These are format examples, not verified entries from Krillion's accepted-answer 
 
 The page checks for a prompt every **200 ms**. Cached answers avoid the API round trip. A new or exhausted prompt asks the model for up to **18 candidates**, then keeps the extras for later choices. The cache holds up to **300 prompts**, with up to **60 candidates each**.
 
-Cold prompts can take several seconds. The API request has a **14-second deadline** and extension messaging an **18-second deadline** for suggestions. Requests for superseded prompts are cancelled; cancellation does not guarantee that an already-processed request is unbilled. This version shows a partial cached batch immediately instead of waiting for a refill.
+Cold prompts can take several seconds. The API request has a **14-second deadline** and extension messaging an **18-second deadline** for suggestions. Requests for superseded prompts are cancelled; cancellation does not guarantee that an already-processed request is unbilled. A partial cached batch appears immediately, and any empty slot is topped up in the background while the shown answers stay put.
 
 Fast HTTP 5xx failures get one retry after 750 ms, within the messaging deadline. Billing, authentication, rate limits and slow timeouts are not retried automatically. If recommendations stall, try **Retry**, reload the extension, and refresh the game. See [troubleshooting](docs/TROUBLESHOOTING.md).
 

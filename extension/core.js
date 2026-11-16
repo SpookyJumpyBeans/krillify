@@ -21,7 +21,7 @@ export function cleanCandidates(values) {
     return [{answer, aliases, note: typeof item.note === 'string' ? item.note.slice(0, 150) : ''}];
   });
 }
-export function takeThree(pool, history, excluded = []) {
+export function takeThree(pool, history, excluded = [], limit = 3) {
   const blocked = new Set([...history, ...excluded].map(normalize));
   const selected = [];
   for (const item of cleanCandidates(pool)) {
@@ -29,7 +29,7 @@ export function takeThree(pool, history, excluded = []) {
     if (keys.some(key => blocked.has(key))) continue;
     selected.push(item);
     keys.forEach(key => blocked.add(key));
-    if (selected.length === 3) break;
+    if (selected.length >= limit) break;
   }
   return selected;
 }
