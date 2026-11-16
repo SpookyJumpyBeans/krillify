@@ -6,7 +6,7 @@ Load the repository's `extension` folder, enable the extension, and refresh the 
 
 ## Waiting for a prompt while the game shows one
 
-Use **Pick prompt**, then click the game’s actual category text. Structured tracking is preferred; a disconnected or changed game protocol falls back to the page’s DOM classes. Selecting a parent with extra text may produce an incorrect category, so select the question itself.
+Use **Pick prompt**, then click the game's actual category text. Structured tracking is preferred; a disconnected or changed game protocol falls back to the page's DOM classes. Selecting a parent with extra text may produce an incorrect category, so select the question itself.
 
 ## AI request timeout
 
@@ -24,12 +24,12 @@ Never post the key in a GitHub issue. Delete it from Settings if you no longer w
 
 ## The game rejects a suggestion
 
-The game’s curated answer list is authoritative. Obscure or correct real-world answers may still be missing from it. Try another suggestion. Rejected submission attempts are remembered in the current game by this version.
+The game's curated answer list is authoritative. Obscure or correct real-world answers may still be missing from it. Try another suggestion. Rejected submission attempts are remembered in the current game by this version.
 
 ## Answers repeat
 
-Unused suggestions may repeat. Your submitted answers, observed accepted opponent answers, and known aliases are excluded for the current game. A new game intentionally allows previous answers again. Tabs observing the same server game share its used list; DOM fallback scopes are per tab. Earlier accepted answers are recovered when included in the server snapshot. With DOM fallback, only rendered accepted bubbles can be tracked. Changes to the game’s bubble markup can also interrupt tracking.
+Unused suggestions may repeat. Your submitted answers, observed accepted opponent answers, and known aliases are excluded for the current game. A new game intentionally allows previous answers again. Tabs observing the same server game share its used list; DOM fallback scopes are per tab. Earlier accepted answers are recovered when included in the server snapshot. With DOM fallback, only rendered accepted bubbles can be tracked. Changes to the game's bubble markup can also interrupt tracking.
 
 ## Updating
 
-Replace the files in the same loaded `extension` folder, click Reload on your browser’s Extensions page, and refresh Krillion. Keeping the installed extension identity preserves local settings and caches. Loading the code as a separate extension or in a new profile can create separate storage.
+Replace the files in the same loaded `extension` folder, click Reload on your browser's Extensions page, and refresh Krillion. Keeping the installed extension identity preserves local settings and caches. Loading the code as a separate extension or in a new profile can create separate storage.

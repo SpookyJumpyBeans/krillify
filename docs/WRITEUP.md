@@ -1,6 +1,6 @@
 # Krillify 1.2.0 design
 
-Krillify keeps the v1.1.1 answer-selection workflow and adds an independently written game-state adapter. A page-world script attaches read-only listeners to the game’s WebSocket and EventSource connections at document start. It applies snapshots and versioned patches, accumulates accepted pass answers for the current game, and forwards a small allowlisted state message to the isolated overlay. It does not send game actions, forward chat or credentials, or expose API keys.
+Krillify keeps the v1.1.1 answer-selection workflow and adds an independently written game-state adapter. A page-world script attaches read-only listeners to the game's WebSocket and EventSource connections at document start. It applies snapshots and versioned patches, accumulates accepted pass answers for the current game, and forwards a small allowlisted state message to the isolated overlay. It does not send game actions, forward chat or credentials, or expose API keys.
 
 The overlay requests the latest state when it loads, so an early snapshot is not lost. Server game identity controls resets when available. A patch version mismatch or closed socket drops structured tracking and permits the existing DOM fallback. The fallback reads visible prompts and accepted player bubbles; typing, rejected guesses and chat are ignored. Accepted names and known aliases remove visible suggestions and filter in-flight replies.
 

@@ -1,4 +1,4 @@
-![Krillify — deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
+![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
   <img alt="Version 1.2.0" src="https://img.shields.io/badge/version-1.2.0-9ce8cb?style=flat-square&labelColor=102438">
@@ -11,7 +11,7 @@
 
 **Three obscure picks. Right beside the puffer.**
 
-Krillify is an unofficial Chrome/Edge companion for [Krillion’s Puffer Party](https://krillion.io/party). It reads the category on the page and brings answer suggestions into the game, so you can stay focused on your turn.
+Krillify is an unofficial Chrome/Edge companion for [Krillion's Puffer Party](https://krillion.io/party). It reads the category on the page and brings answer suggestions into the game, so you can stay focused on your turn.
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
@@ -44,22 +44,22 @@ No build step, package install, or server is needed.
 2. Open `chrome://extensions` in Chrome or `edge://extensions` in Edge.
 3. Enable **Developer mode** and click **Load unpacked**.
 4. Select the **`extension` folder inside this repository**. That is the folder containing `manifest.json`.
-5. Open Krillify from the browser’s Extensions menu.
+5. Open Krillify from the browser's Extensions menu.
 6. Add your [OpenAI API key](https://platform.openai.com/api-keys), enable recommendations, and save. The default model is `gpt-4.1-mini`; your account must have access to the configured model.
 7. Refresh Krillion and enter a Puffer Party room.
 
-**The source is free. AI requests use your own API account and may incur charges.** There are no shared keys or credits bundled in the extension. Without a key, five starter prompts and your imported banks work locally. Starter prompts: “Name an insect”, “Name an egg dish”, “Name a country in East Africa”, “Name something that uses steam”, and “Name a building material”. These original lists contain 57 candidates, ordered by estimated obscurity; they are not verified against the game’s answer database.
+**The source is free. AI requests use your own API account and may incur charges.** There are no shared keys or credits bundled in the extension. Without a key, five starter prompts and your imported banks work locally. Starter prompts: "Name an insect", "Name an egg dish", "Name a country in East Africa", "Name something that uses steam", and "Name a building material". These original lists contain 57 candidates, ordered by estimated obscurity; they are not verified against the game's answer database.
 
 ## During a game
 
 - **Click an answer** to fill the input. Filling or viewing a suggestion does not mark it used.
-- **Submit in the game** to add that answer to the current game’s exclusion list. Manually typed answers are tracked too. Submission attempts are remembered even if the game rejects them.
+- **Submit in the game** to add that answer to the current game's exclusion list. Manually typed answers are tracked too. Submission attempts are remembered even if the game rejects them.
 - **Next 3** temporarily skips the current suggestions and offers another batch. It does not permanently exclude answers you only viewed.
-- **New game, fresh used list.** The helper uses the server game identity when available, with lobby, countdown, game-over and category-counter transitions as a fallback. Ordinary category changes keep the same game’s list.
+- **New game, fresh used list.** The helper uses the server game identity when available, with lobby, countdown, game-over and category-counter transitions as a fallback. Ordinary category changes keep the same game's list.
 - **Refreshes in the same tab** retain the game identity. Tabs observing the same server game share its used list; the DOM fallback uses a per-tab identity.
 - **Pick prompt** lets you click the category text if automatic detection misses it.
 
-**Opponents’ accepted answers are tracked automatically.** Krillify reads accepted answers from game snapshots/patches and watches accepted-answer bubbles, adds them to the same game-scoped exclusion list, removes matching visible suggestions (including known aliases), and requests replacements. It also checks answers that arrive while a suggestion request is running. Typing previews, rejected guesses and chat do not count as opponent answers.
+**Opponents' accepted answers are tracked automatically.** Krillify reads accepted answers from game snapshots/patches and watches accepted-answer bubbles, adds them to the same game-scoped exclusion list, removes matching visible suggestions (including known aliases), and requests replacements. It also checks answers that arrive while a suggestion request is running. Typing previews, rejected guesses and chat do not count as opponent answers.
 
 Structured tracking can recover earlier accepted answers included in the server event history when you join. If structured tracking is unavailable, tracking covers accepted bubbles rendered while the helper runs. A server history that has already been truncated cannot be recovered. Known aliases are matched; unknown alternate names can still slip through.
 
@@ -81,7 +81,7 @@ In Settings, choose a JSON file under **Instant answer banks**. Map prompt text 
 }
 ```
 
-These are format examples, not verified entries from Krillion’s accepted-answer database. Prompt matching ignores case and punctuation. Imports merge into the local cache without clearing used answers.
+These are format examples, not verified entries from Krillion's accepted-answer database. Prompt matching ignores case and punctuation. Imports merge into the local cache without clearing used answers.
 
 ## Speed and limits
 
@@ -93,7 +93,7 @@ Fast HTTP 5xx failures get one retry after 750 ms, within the messaging deadline
 
 ## Privacy
 
-The API key, cache, and used-answer records stay in this browser profile’s extension storage. They are not synced. The key is not encrypted locally, but storage access is restricted to extension pages and the background worker.
+The API key, cache, and used-answer records stay in this browser profile's extension storage. They are not synced. The key is not encrypted locally, but storage access is restricted to extension pages and the background worker.
 
 OpenAI requests contain the category, excluded/cached answer names, and your API authentication. They do not include room chat, player identities, cookies, or room credentials. Requests set `store: false`. No analytics or developer-operated backend is included.
 
