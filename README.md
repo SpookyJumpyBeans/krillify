@@ -1,7 +1,7 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.4.2" src="https://img.shields.io/badge/version-1.4.2-9ce8cb?style=flat-square&labelColor=102438">
+  <img alt="Version 1.5.0" src="https://img.shields.io/badge/version-1.5.0-9ce8cb?style=flat-square&labelColor=102438">
   <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%2F%20Edge-4de3ff?style=flat-square&labelColor=102438">
   <img alt="Manifest V3" src="https://img.shields.io/badge/extension-Manifest%20V3-ffd166?style=flat-square&labelColor=102438">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=flat-square&labelColor=102438">
@@ -15,6 +15,8 @@ Krillify is an unofficial Chrome/Edge companion for [Krillion's Puffer Party](ht
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
+> **v1.5.0** grounds the AI in game results: for each prompt it sees the answers the game accepted (with their tiers) and rejected, and is asked for real, standard names at that level of detail, facts it is sure of, and less common choices only within that list.
+>
 > **v1.4.0** learns from rejected answers: an answer the game says isn't on its list is never suggested again for that prompt, in later games or through the shared bank. Each accepted or rejected answer is now matched to its category exactly, and with the game feed connected your own submissions count only once the game accepts or rejects them.
 >
 > **v1.3.0** shipped a shared answer bank to every install, ranks answers by the rarity tiers seen in real games, and picks at random from the rarest few so players sharing the bank don't all give the same answers. The bank keeps three answers on screen and refills only the slot you used.
@@ -145,6 +147,17 @@ node tests/matching.cjs
 node tests/worker-v120.cjs
 node tests/worker-refill.cjs
 node tests/worker-bank.cjs
+node tests/worker-prompt.cjs
+```
+
+## Comparing models
+
+`tools/model-eval.mjs` measures answer-generating models against the game's own results in a bank file: for each prompt with enough results, half are shown to the model as examples and half are held back to grade its answers (known accept, known reject, or unknown). Keys come from `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` in your shell, never from the extension.
+
+```sh
+cd tools && npm install
+node model-eval.mjs ../extension/banks.json          # dry run: prompts, calls, estimated cost
+node model-eval.mjs ../extension/banks.json --run    # calls the APIs
 ```
 
 ## Contributing

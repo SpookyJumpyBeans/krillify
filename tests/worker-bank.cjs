@@ -1,7 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path'),{pathToFileURL}=require('node:url');
 (async()=>{
  const base=path.join(__dirname,'../extension/');
- const core=await import(pathToFileURL(path.resolve(base+'core.js')));const bankMod=await import(pathToFileURL(path.resolve(base+'bank.js')));
+ const core=await import(pathToFileURL(path.resolve(base+'core.js')));const bankMod=await import(pathToFileURL(path.resolve(base+'bank.js')));const promptMod=await import(pathToFileURL(path.resolve(base+'prompt.js')));
  const {takeThree,cleanCandidates}=core,{combinePool,mergeBank,serializeBank,indexBank}=bankMod;
 
  // Random picks stay inside the rarest six and keep bank order.
@@ -54,7 +54,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
   throw new Error('unexpected '+p);
  };
  let listener;
- const sandbox={...core,...bankMod,console,AbortController,setTimeout,clearTimeout,fetch,TextEncoder,TextDecoder,atob,btoa,
+ const sandbox={...core,...bankMod,...promptMod,console,AbortController,setTimeout,clearTimeout,fetch,TextEncoder,TextDecoder,atob,btoa,
   chrome:{permissions:{contains:async()=>true},runtime:{getURL:p=>'chrome-extension://test/'+p,getManifest:()=>({version:'1.4.0'}),onMessage:{addListener:fn=>listener=fn}},
    storage:{local:{setAccessLevel:async()=>{},get:async keys=>Object.fromEntries((Array.isArray(keys)?keys:[keys]).map(k=>[k,structuredClone(data[k])])),set:async x=>Object.assign(data,structuredClone(x))}}}};
  vm.runInNewContext(fs.readFileSync(base+'background.js','utf8').replace(/^import .*;\r?\n/gm,''),sandbox);

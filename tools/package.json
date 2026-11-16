@@ -1,0 +1,13 @@
+{
+  "name": "krillify-tools",
+  "private": true,
+  "type": "module",
+  "description": "Developer tools for Krillify. Not part of the extension.",
+  "scripts": {
+    "model-eval": "node model-eval.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.8.0",
+    "zod": "4.6.7"
+  }
+}

@@ -1,9 +1,9 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{pathToFileURL}=require('node:url');
 (async()=>{
- const base=require('node:path').join(__dirname,'../extension/');const core=await import(pathToFileURL(require('node:path').resolve(base+'core.js')));const bankMod=await import(pathToFileURL(require('node:path').resolve(base+'bank.js')));
+ const base=require('node:path').join(__dirname,'../extension/');const core=await import(pathToFileURL(require('node:path').resolve(base+'core.js')));const bankMod=await import(pathToFileURL(require('node:path').resolve(base+'bank.js')));const promptMod=await import(pathToFileURL(require('node:path').resolve(base+'prompt.js')));
  let listener,fetches=0,fail=false;const data={settings:{enabled:true,apiKey:'test-key',model:'test'},games:{},pools:{'q:shortprompt':{answers:['One','Two'],source:'cache'}}};
  const fetch=async url=>{if(String(url).startsWith('chrome-extension://'))return {ok:true,json:async()=>({})};fetches++;if(fail)return {ok:false,status:401,json:async()=>({})};return {ok:true,json:async()=>({choices:[{message:{content:JSON.stringify({answers:['Three','Four','Five']})}}]})}};
- const sandbox={...core,...bankMod,console,AbortController,setTimeout,clearTimeout,fetch,chrome:{runtime:{getURL:p=>'chrome-extension://test/'+p,getManifest:()=>({version:'1.2.1'}),onMessage:{addListener:fn=>listener=fn}},storage:{local:{setAccessLevel:async()=>{},get:async keys=>Object.fromEntries((Array.isArray(keys)?keys:[keys]).map(k=>[k,structuredClone(data[k])])),set:async x=>Object.assign(data,structuredClone(x))}}}};
+ const sandbox={...core,...bankMod,...promptMod,console,AbortController,setTimeout,clearTimeout,fetch,chrome:{runtime:{getURL:p=>'chrome-extension://test/'+p,getManifest:()=>({version:'1.2.1'}),onMessage:{addListener:fn=>listener=fn}},storage:{local:{setAccessLevel:async()=>{},get:async keys=>Object.fromEntries((Array.isArray(keys)?keys:[keys]).map(k=>[k,structuredClone(data[k])])),set:async x=>Object.assign(data,structuredClone(x))}}}};
  vm.runInNewContext(fs.readFileSync(base+'background.js','utf8').replace(/^import .*;\r?\n/gm,''),sandbox);
  const send=m=>new Promise(r=>listener(m,{tab:{id:1},url:'https://krillion.io/party/TEST'},r));
  // One free slot: exactly one answer, none of the cards already on screen.
