@@ -51,9 +51,20 @@ async function runSync(force) {
   if (!maintainer.token || !/^[\w.-]+\/[\w.-]+$/.test(repo)) throw new Error('Set the repository and GitHub token in Settings.');
   if (!force && Date.now() - (syncState.at || 0) < 60000) return {skipped: 'Synced less than a minute ago.'};
   if (!await chrome.permissions.contains({origins: ['https://api.github.com/*']})) throw new Error('GitHub access isn’t granted. Save the maintainer settings again.');
-  const github = (path, init = {}) => fetch(`https://api.github.com/repos/${repo}${path}`, {...init, headers: {
+  const api = (path, init = {}) => fetch(`https://api.github.com${path}`, {...init, headers: {
     Accept: 'application/vnd.github+json', Authorization: `Bearer ${maintainer.token}`, 'X-GitHub-Api-Version': '2022-11-28',
     ...(init.body ? {'Content-Type': 'application/json'} : {}), ...init.headers}});
+  const github = (path, init) => api(`/repos/${repo}${path}`, init);
+  // Without an explicit author, GitHub stamps commits with the account's public profile email.
+  // Commit as the token owner's noreply address instead, and refuse to commit if it's unknown.
+  let identity;
+  const author = async () => {
+    if (identity) return identity;
+    const response = await api('/user');
+    const user = response.ok ? await response.json() : {};
+    if (!Number.isInteger(user.id) || typeof user.login !== 'string') throw new Error(`Couldn’t look up the token’s GitHub account (${response.status}), so nothing was committed.`);
+    return identity = {name: user.login, email: `${user.id}+${user.login}@users.noreply.github.com`};
+  };
   const fail = (response, what) => {
     if (response.status === 401) throw new Error('GitHub rejected the token. Check it in Settings.');
     if (response.status === 403 || response.status === 404) throw new Error(`GitHub ${what} failed (${response.status}). The token needs Contents: read and write on ${repo}.`);
@@ -83,7 +94,7 @@ async function runSync(force) {
     if (text !== current) {
       const plural = (n, word) => `${n} new ${word}${n === 1 ? '' : 's'}`;
       const message = prompts || answers ? `Update answer bank: ${plural(prompts, 'prompt')}, ${plural(answers, 'answer')}` : 'Update answer bank rarity tiers';
-      const put = await github(`/contents/${bankPath}`, {method: 'PUT', body: JSON.stringify({message, content: toBase64(text), branch, ...(sha ? {sha} : {})})});
+      const put = await github(`/contents/${bankPath}`, {method: 'PUT', body: JSON.stringify({message, content: toBase64(text), branch, author: await author(), committer: await author(), ...(sha ? {sha} : {})})});
       if ((put.status === 409 || put.status === 422) && !attempt) continue;
       if (!put.ok) fail(put, 'commit');
       result = `Committed to ${branch}: ${message}.`;

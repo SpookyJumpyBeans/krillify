@@ -29,12 +29,13 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  // Worker: shared bank without a key, recording, and the maintainer sync.
  const shared={'Name a fish':[{answer:'Oarfish',tier:'deepcut'},'Burbot','Wels']};
  const data={settings:{enabled:true,apiKey:''},games:{},pools:{},maintainer:{enabled:false}};
- const gh={refs:{main:'abc'},file:null,puts:[],calls:[]};
+ const gh={refs:{main:'abc'},file:null,puts:[],calls:[],user:{id:42,login:'me',email:'private@example.com'}};
  const json=(status,body)=>({ok:status<300,status,json:async()=>body,text:async()=>JSON.stringify(body)});
  const fetch=async(url,init={})=>{
   url=String(url);if(url.startsWith('chrome-extension://'))return json(200,shared);
   assert.equal(init.headers.Authorization,'Bearer tok');gh.calls.push((init.method||'GET')+' '+url.replace('https://api.github.com/repos/me/krillify',''));
   const p=url.replace('https://api.github.com/repos/me/krillify','');
+  if(url==='https://api.github.com/user')return gh.user?json(200,gh.user):json(403,{});
   if(p==='')return json(200,{default_branch:'main'});
   let m=p.match(/^\/git\/ref\/heads\/(.+)$/);if(m)return gh.refs[m[1]]?json(200,{object:{sha:gh.refs[m[1]]}}):json(404,{});
   if(p==='/git/refs'){const b=JSON.parse(init.body);gh.refs[b.ref.replace('refs/heads/','')]=b.sha;return json(201,{});}
@@ -67,6 +68,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  result=await send({type:'sync'});
  assert.match(result.result,/Committed to bank-updates: Update answer bank: 2 new prompts, 4 new answers/);
  assert.equal(gh.refs['bank-updates'],'abc');assert.equal(gh.puts.length,1);assert.equal(gh.puts[0].branch,'bank-updates');assert.equal(gh.puts[0].sha,undefined);
+ const noreply={name:'me',email:'42+me@users.noreply.github.com'};assert.deepEqual(gh.puts[0].author,noreply);assert.deepEqual(gh.puts[0].committer,noreply);
  const committed=JSON.parse(Buffer.from(gh.puts[0].content,'base64').toString('utf8'));
  assert.deepEqual(committed,{'Name a bird':[{answer:'Hoatzin'},{answer:'Kakapo'}],'Name a fish':[{answer:'Oarfish',tier:'krillion'},{answer:'Cod',tier:'plankton'}]});
 
@@ -77,7 +79,11 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  result=await send({type:'sync',force:true},page);assert.equal(gh.puts.length,2);assert.equal(gh.puts[1].sha,'s1');
  assert.match(result.result,/1 new answer\b/);
 
+ // If the account can't be looked up, refuse to commit rather than fall back to the profile email.
+ data.verified['q:nameafish'].answers.wels={answer:'Wels',tier:'rare'};gh.user=null;const before=gh.puts.length;
+ result=await send({type:'sync',force:true},page);assert.match(result.error,/nothing was committed/);assert.equal(gh.puts.length,before);gh.user={id:42,login:'me'};
+
  gh.file=null;data.maintainer.token='bad';
  result=await send({type:'sync',force:true},page);assert(result.error);assert.equal(data.syncState.failed,true);
- console.log('PASS random picks within the rarest six, tier ranking, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, commit, no-op, update with sha, rate limit, sender checks, failure state)');
+ console.log('PASS random picks within the rarest six, tier ranking, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, noreply author, commit, no-op, update with sha, rate limit, sender checks, no commit without an identity, failure state)');
 })().catch(e=>{console.error(e);process.exitCode=1});
