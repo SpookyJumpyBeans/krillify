@@ -1077,6 +1077,26 @@
     {"answer":"thehoxton","aliases":["hoxton hotel"],"note":"boutique hotel chain known for vibrant social spaces"},
     {"answer":"standardhotels","aliases":["the standard"],"note":"boutique hotels focusing on art and culture experiences"}
   ],
+  "Name a job at a restaurant": [
+    {"answer":"expediter","aliases":["order expeditor"],"note":"coordinates orders between kitchen and waitstaff"},
+    {"answer":"busser","aliases":["busboy"],"note":"clears tables and assists servers"},
+    {"answer":"runners","aliases":["food runner"],"note":"delivers food from kitchen to customers"},
+    {"answer":"barback","aliases":["bar assistant"],"note":"supports bartenders by restocking supplies"},
+    {"answer":"chef de partie","aliases":["station chef"],"note":"chef responsible for a particular area of production"},
+    {"answer":"garde manger","aliases":["pantry chef"],"note":"prepares cold dishes and salads"},
+    {"answer":"maître d'hôtel","aliases":["head waiter"],"note":"manages front-of-house staff and seating arrangements"},
+    {"answer":"sommelier apprentice","aliases":["junior sommelier"],"note":"trainee wine expert"},
+    {"answer":"host","aliases":["hostess"],"note":"greets and seats guests"},
+    {"answer":"dishwasher","aliases":["kitchen porter"],"note":"cleans dishes and implements"},
+    {"answer":"line cook","aliases":["station cook"],"note":"prepares menu items on designated stations"},
+    {"answer":"sous chef","aliases":["second chef"],"note":"assistant to head chef"},
+    {"answer":"head chef","aliases":["executive chef"],"note":"oversees kitchen operations"},
+    {"answer":"bartender","aliases":["mixologist"],"note":"prepares and serves drinks"},
+    {"answer":"server","aliases":["waiter","waitress"],"note":"takes orders and serves food"},
+    {"answer":"pastry chef","aliases":["pâtissier"],"note":"specializes in desserts and baked goods"},
+    {"answer":"barista","aliases":["coffee server"],"note":"prepares and serves coffee beverages"},
+    {"answer":"sommelier","aliases":["wine steward"],"note":"specialized wine expert in fine dining establishments","tier":"schooler"}
+  ],
   "Name a juice brand": [
     {"answer":"cawstonpress","aliases":["cawston"],"note":"UK-based cold-pressed juice brand known for organic blends"},
     {"answer":"inawera","aliases":["inawera juice"],"note":"Polish brand producing natural fruit juices"},
@@ -3342,6 +3362,13 @@
     {"answer":"get him back!","note":"An emotionally charged song from 'Guts,' 2023","tier":"schooler"},
     {"answer":"hope ur ok","note":"A song on the album 'Guts' by Olivia Rodrigo","tier":"schooler"},
     {"answer":"deja vu","note":"Hit single from the album 'Sour'","tier":"plankton"}
+  ],
+  "Name one of the emotions from Inside Out or Inside Out 2": [
+    {"answer":"disgust","aliases":["revulsion"],"note":"An emotion representing dislike and avoidance"},
+    {"answer":"fear","aliases":["anxiety"],"note":"An emotion representing concern and caution"},
+    {"answer":"sadness","aliases":["melancholy"],"note":"An emotion representing sorrow and despair"},
+    {"answer":"joy","aliases":["happiness"],"note":"An emotion representing delight and positivity"},
+    {"answer":"anger","aliases":["rage"],"note":"An emotion representing frustration and fury"}
   ],
   "Name something a cowboy wears or carries": [
     {"answer":"poncho","aliases":["serape"],"note":"cloaks of woven fabric used for weather","tier":"rare"},
