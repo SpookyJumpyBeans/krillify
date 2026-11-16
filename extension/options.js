@@ -7,6 +7,7 @@ async function load() {
   $('count').textContent = 'Used answers are tracked separately for each game. New games can reuse previous answers.';
 }
 await load();
+$('version').textContent = 'v' + chrome.runtime.getManifest().version;
 $('settings').addEventListener('submit', async event => {
   event.preventDefault();
   try {

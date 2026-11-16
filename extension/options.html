@@ -1,18 +1,40 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Krillify settings</title><link rel="stylesheet" href="options.css"></head><body><main>
-<p class="eyebrow">KRILLIFY</p><h1>Obscure answers, on the page.</h1><p>Watches Puffer Party prompts and displays three suggestions. Only answers you submit are excluded for the current game. A new game starts with a fresh used-answer list; cached answers stay available.</p>
-<form id="settings"><label class="check"><input id="enabled" type="checkbox"> Enable automatic recommendations</label>
-<label>OpenAI API key<input id="apiKey" type="password" autocomplete="off" placeholder="Paste your API key"></label>
-<p class="hint">Stored in this browser profile, not synced. The key goes only to api.openai.com. Each new or exhausted prompt can make a paid API request (one fast server failure may be retried); normal page updates don’t. The API receives the prompt and excluded answers, not the room chat.</p>
-<label>Model<input id="model" value="gpt-4.1-mini" required maxlength="100"></label>
-<button type="submit">Save settings</button><p id="status" role="status"></p></form>
-<hr><h2>Current-game answer tracking</h2><p id="count"></p><button id="reset" class="secondary">Clear used answers…</button><p class="hint">Submitted answers are excluded within their game. The helper detects the next game from the lobby, countdown, game-over and category counter. Refreshing the same tab keeps that game's used list. Merely viewing or filling a suggestion does not use it. Known aliases are matched; unknown aliases may still slip through.</p>
-<hr><h2>Instant answer banks</h2><p>Import answers for prompts you know in advance. Cached/imported answers need no network call. Without an API key, five built-in starter prompts and imported prompts work. Starter answers are unverified.</p><input id="bank" type="file" accept="application/json,.json"><p class="hint">JSON format: {"Name an egg dish": ["Oeufs en meurette", "Shirred eggs", "Gyeran-jjim"]}. Order each list from rarest to less rare. Importing merges with your cache; it doesn’t clear history.</p>
-<hr><h2>Maintainer: share the bank</h2><p>For the repository owner. After each game, Krillify commits new AI answers, and answers other players got accepted (with their rarity tier), to <code>extension/banks.json</code> on a branch. Merge that branch to ship the bank to every user, with or without a key.</p>
-<form id="maintainer"><label class="check"><input id="mEnabled" type="checkbox"> Commit bank updates after each game</label>
-<label>Repository (owner/name)<input id="mRepo" placeholder="owner/krillify" pattern="[\w.\-]+/[\w.\-]+" autocomplete="off"></label>
-<label>Branch<input id="mBranch" value="bank-updates" autocomplete="off"></label>
-<label>GitHub token<input id="mToken" type="password" autocomplete="off" placeholder="Fine-grained token"></label>
-<p class="hint">Use a fine-grained token limited to this one repository with only Contents: read and write. It's stored in this browser profile and sent only to api.github.com. Chrome asks for GitHub access when you turn this on. The branch is created from the default branch if it doesn't exist.</p>
-<button type="submit">Save maintainer settings</button> <button type="button" id="syncNow" class="secondary">Sync now</button><p id="mStatus" role="status"></p></form>
-<p class="hint">AI rarity is an estimate. Krillion may reject a valid answer absent from its curated list. First-time prompts require a network round trip and are not instant. This extension fills answers on click; you submit them.</p>
+<header class="brand"><h1>KRILL<span>IFY</span></h1><div class="rule"></div><span id="version" class="tag"></span></header>
+<p class="lede">Three deep cuts for every Puffer Party prompt, right beside the puffer. Only answers that get submitted count as used, and each new game starts with a fresh used list.</p>
+
+<section class="panel"><div class="head"><h2>Suggestions</h2><div class="rule"></div></div>
+<form id="settings">
+<label class="check"><input id="enabled" type="checkbox"><span>Show suggestions in games</span></label>
+<label class="field"><span class="label">OpenAI API key</span><input id="apiKey" type="password" autocomplete="off" placeholder="paste your key"></label>
+<p class="hint">Optional. Without a key, prompts in the shared bank, the starter prompts and your imported banks still work. The key stays in this browser profile and goes only to api.openai.com. A new or exhausted prompt can make a paid request; ordinary page updates don’t. The API gets the prompt and the answers to avoid, never the room chat.</p>
+<label class="field"><span class="label">Model</span><input id="model" value="gpt-4.1-mini" required maxlength="100"></label>
+<div class="actions"><button type="submit" class="primary">Save</button></div>
+<p id="status" class="status" role="status"></p>
+</form></section>
+
+<section class="panel"><div class="head"><h2>Used answers</h2><div class="rule"></div></div>
+<p id="count" class="body"></p>
+<div class="actions"><button id="reset">Clear used answers…</button></div>
+<p class="hint">Submitted answers are skipped for the rest of their game, along with known aliases. Krillify spots the next game from the lobby, countdown, game-over screen and category counter. Refreshing the tab keeps the current game’s list. Viewing or filling a suggestion doesn’t use it.</p>
+</section>
+
+<section class="panel"><div class="head"><h2>Answer banks</h2><div class="rule"></div></div>
+<p class="body">Import answers for prompts you know in advance. Banked answers appear instantly with no network call.</p>
+<label class="file"><input id="bank" type="file" accept="application/json,.json"><span>Import JSON bank</span></label>
+<p class="hint">Format: <code>{"Name an egg dish": ["Oeufs en meurette", "Gyeran-jjim"]}</code>, each list rarest first. Importing merges into your cache and doesn’t clear the used list.</p>
+</section>
+
+<section class="panel"><div class="head"><h2>Maintainer</h2><div class="rule"></div></div>
+<p class="body">For the repository owner. When a game ends, Krillify commits new AI answers, and answers other players got accepted with their rarity tier, to <code>extension/banks.json</code> on a branch. Merge the branch to ship the bank to every user.</p>
+<form id="maintainer">
+<label class="check"><input id="mEnabled" type="checkbox"><span>Commit bank updates after each game</span></label>
+<label class="field"><span class="label">Repository</span><input id="mRepo" placeholder="owner/krillify" pattern="[\w.\-]+/[\w.\-]+" autocomplete="off"></label>
+<label class="field"><span class="label">Branch</span><input id="mBranch" value="bank-updates" autocomplete="off"></label>
+<label class="field"><span class="label">GitHub token</span><input id="mToken" type="password" autocomplete="off" placeholder="fine-grained token"></label>
+<p class="hint">Limit the token to this one repository with only Contents: read and write. It stays in this browser profile and goes only to api.github.com. Commits use the account’s noreply address, never its profile email. Chrome asks for GitHub access when you turn this on.</p>
+<div class="actions"><button type="submit" class="primary">Save</button><button type="button" id="syncNow">Sync now</button></div>
+<p id="mStatus" class="status" role="status"></p>
+</form></section>
+
+<p class="fine">Rarity is estimated, and Krillion may reject a real answer that isn’t on its list. You always submit answers yourself.</p>
 </main><script type="module" src="options.js"></script></body></html>

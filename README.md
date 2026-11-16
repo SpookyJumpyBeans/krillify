@@ -144,4 +144,6 @@ node tests/worker-bank.cjs
 
 Useful contributions include verified answer banks, prompt-detection examples, and reproducible bug reports. Include your browser version, extension version, prompt text, and exact error message. Keep API keys and private room details out of reports.
 
+The settings page bundles the [VT323](https://fonts.google.com/specimen/VT323) font, © The VT323 Project Authors, under the SIL Open Font License 1.1 ([extension/fonts/OFL.txt](extension/fonts/OFL.txt)).
+
 Krillify is an independent project, not affiliated with or endorsed by Krillion. The banner is original AI-generated artwork, not an official game asset. Code is available under the [MIT license](LICENSE).
