@@ -432,6 +432,24 @@
     {"answer":"combat jujutsu","aliases":["kenpo jujutsu"],"note":"modern Japanese hybrid martial arts combining striking and grappling"},
     {"answer":"shoot wrestling","aliases":["shoot-style wrestling"],"note":"Japanese martial art and pro wrestling style emphasizing realistic strikes and submissions"}
   ],
+  "Name a company in the S&P 500": [
+    {"answer":"Steel Dynamics","aliases":["SDI"],"note":"Steel producer included in the S&P 500","tier":"deepcut"},
+    {"answer":"Fastenal","aliases":["FAST"],"note":"Industrial supplies distributor in the S&P 500","tier":"deepcut"},
+    {"answer":"Fortinet","aliases":["FTNT"],"note":"Cybersecurity company listed in the S&P 500"},
+    {"answer":"D.R. Horton","aliases":["DHI"],"note":"Home construction company in the S&P 500"},
+    {"answer":"Cooper Companies","aliases":["CooperCos"],"note":"Medical device company in the S&P 500"},
+    {"answer":"Equifax","aliases":["EFX"],"note":"Credit reporting agency in the S&P 500"},
+    {"answer":"Synopsys","aliases":["SNPS"],"note":"Electronic design automation software company in the S&P 500"},
+    {"answer":"Omnicom Group","aliases":["OMC"],"note":"Global marketing and corporate communications holding company"},
+    {"answer":"W.W. Grainger","aliases":["Grainger"],"note":"Industrial supply distributor in the S&P 500"},
+    {"answer":"Chubb Limited","aliases":["CB"],"note":"Global insurance company in the S&P 500"},
+    {"answer":"Kellogg Company","aliases":["K"],"note":"Consumer food manufacturing company in the S&P 500"},
+    {"answer":"NVR, Inc.","aliases":["NVR"],"note":"Homebuilding and mortgage banking company in the S&P 500"},
+    {"answer":"Expedia Group","aliases":["EXPE"],"note":"Online travel company included in the S&P 500"},
+    {"answer":"Monster Beverage","aliases":["Monster Energy"],"note":"Beverage company in the S&P 500","tier":"schooler"},
+    {"answer":"PepsiCo","tier":"schooler"},
+    {"answer":"Coca-Cola","tier":"plankton"}
+  ],
   "Name a compound word ending in “work”": [
     {"answer":"needlework","note":"craft involving sewing or embroidery"},
     {"answer":"clockwork","note":"mechanism powered by a clock's gears"},
@@ -2022,6 +2040,26 @@
     {"answer":"Ginkgo","aliases":["Ginkgo biloba"],"note":"A unique tree species native to China known as a living fossil"},
     {"answer":"Black Tupelo","aliases":["Nyssa sylvatica"],"note":"A deciduous tree native to eastern North America valued for fall color"},
     {"answer":"Yellowwood","aliases":["Cladrastis kentukea"],"note":"A small deciduous tree of eastern North America with fragrant flowers"}
+  ],
+  "Name a sport normally played on grass": [
+    {"answer":"Spear throwing","tier":"deepcut"},
+    {"answer":"Hammer throw","tier":"deepcut"},
+    {"answer":"bocce","aliases":["bocce ball"],"note":"An Italian bowling game played on grass or sand courts","tier":"rare"},
+    {"answer":"shinty","note":"A Scottish team sport played on grass, similar to field hockey","tier":"rare"},
+    {"answer":"hurling","note":"An Irish sport played on grass with a wooden stick and ball","tier":"rare"},
+    {"answer":"kabaddi","note":"A contact team sport originating in India, played on grass"},
+    {"answer":"lawn tennis","aliases":["grass court tennis"],"note":"The original variant of tennis played on grass courts"},
+    {"answer":"gaelic football","note":"An Irish team sport played on grass using a round ball"},
+    {"answer":"golf","note":"A precision club-and-ball sport played on grass courses"},
+    {"answer":"rugby union","aliases":["rugby"],"note":"A contact sport played on grass fields","tier":"schooler"},
+    {"answer":"ultimate frisbee","aliases":["ultimate"],"note":"A non-contact team sport often played on grass fields","tier":"schooler"},
+    {"answer":"polo","note":"A horseback ball game played on large grass fields","tier":"schooler"},
+    {"answer":"cricket","note":"A bat-and-ball game played on grass pitches","tier":"schooler"},
+    {"answer":"field hockey","aliases":["hockey"],"note":"A widely played team sport on grass and artificial turf","tier":"schooler"},
+    {"answer":"lacrosse","note":"A team sport played on grass using a stick with a net","tier":"schooler"},
+    {"answer":"American football","aliases":["gridiron"],"note":"A contact sport played on grass or artificial turf","tier":"plankton"},
+    {"answer":"croquet","note":"A lawn game where players hit balls through hoops in grass areas","tier":"plankton"},
+    {"answer":"soccer","aliases":["association football","football"],"note":"A global sport played on grass pitches","tier":"plankton"}
   ],
   "Name a sport that has ever been part of the Summer Olympics": [
     {"answer":"roque","note":"An American variant of croquet, featured only at the 1904 Olympics","tier":"deepcut"},
