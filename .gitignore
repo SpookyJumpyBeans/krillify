@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+node_modules/
+work/
+tmp/
+*.log
+*.zip
+*.crx
+*.pem
+*profile*/
+local-settings.json
+credentials.json
+.DS_Store
+Thumbs.db
