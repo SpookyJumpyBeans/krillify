@@ -816,6 +816,19 @@
     {"answer":"Netherlands","note":"Mainland in Europe and overseas territories in the Caribbean (North America)"},
     {"answer":"Italy","note":"Mainland Europe plus some islands in Africa (Lampedusa closer to Africa)"}
   ],
+  "Name a dating app": [
+    {"answer":"Sapio","aliases":["Sapio Dating"],"note":"A dating app focusing on intellectual connection.","tier":"deepcut"},
+    {"answer":"Once","note":"Dating app known for providing one match per day.","tier":"deepcut"},
+    {"answer":"Duet","tier":"rare"},
+    {"answer":"Feeld","note":"App catering to open-minded and non-traditional relationships.","tier":"rare"},
+    {"answer":"Huggle","note":"A dating app matching people by places they frequent."},
+    {"answer":"Clover","note":"Dating app combining Tinder-style swiping with scheduling dates."},
+    {"answer":"OkCupid","note":"Longstanding dating app with extensive questionnaires."},
+    {"answer":"Grindr","tier":"schooler"},
+    {"answer":"Bumble","note":"Dating app where women initiate contact.","tier":"plankton"},
+    {"answer":"Hinge","note":"Dating app designed to be deleted, emphasizing serious relationships.","tier":"plankton"},
+    {"answer":"Tinder","tier":"plankton"}
+  ],
   "Name a dip": [
     {"answer":"ketchup","aliases":["catsup"],"note":"tomato-based dip popular worldwide"},
     {"answer":"tzatziki","aliases":["cucumber yogurt dip"],"note":"Greek dip made from yogurt, cucumber, and garlic"},
@@ -2284,6 +2297,28 @@
     {"answer":"storm door","aliases":["screen storm door"],"note":"outer door protecting against weather"},
     {"answer":"clam door","aliases":["clam shell door"],"note":"door split horizontally and opens by splitting apart"},
     {"answer":"reed door","aliases":["reed curtain door"],"note":"door made of reeds or bamboo strips"}
+  ],
+  "Name a type of makeup product (brands don't count)": [
+    {"answer":"brow gel","aliases":["eyebrow gel"],"note":"a gel used to shape and hold eyebrows in place","tier":"rare"},
+    {"answer":"eye primer","aliases":["eyeshadow base"],"note":"a base product applied on eyelids to enhance eyeshadow longevity","tier":"rare"},
+    {"answer":"pore filler","aliases":["pore minimizing primer"],"note":"a product that reduces the appearance of pores"},
+    {"answer":"tinted moisturizer","aliases":["colored moisturizer"],"note":"a moisturizing cream with light pigmentation for an even skin tone"},
+    {"answer":"cream blush","aliases":["cream rouge"],"note":"a blush with a creamy texture applied on cheeks"},
+    {"answer":"lip liner","aliases":["lip pencil"],"note":"a cosmetic pencil used to define the lips' edges"},
+    {"answer":"setting spray","aliases":["fixing spray"],"note":"a spray to lock makeup in place for longer wear"},
+    {"answer":"contour powder","aliases":["contouring powder"],"note":"a powder used to define and shape facial features"},
+    {"answer":"highlighter","aliases":["illuminator"],"note":"a product to accentuate high points of the face with light-reflecting particles"},
+    {"answer":"lip balm","aliases":["lip conditioner"],"note":"a moisturizing product for lips that can also add shine"},
+    {"answer":"setting powder","aliases":["finishing powder"],"note":"a powder to set foundation and reduce shine"},
+    {"answer":"foundation","aliases":["base makeup"],"note":"a product that provides an even skin tone"},
+    {"answer":"eyeshadow","aliases":["eye shadow"],"note":"a cosmetic applied on the eyelids"},
+    {"answer":"mascara","aliases":["lash enhancer"],"note":"a product to darken and lengthen eyelashes"},
+    {"answer":"bronzer","aliases":["sun powder"],"note":"a powder to add warmth and a sun-kissed glow"},
+    {"answer":"cream eyeshadow","aliases":["cream shadow"],"note":"an eyeshadow with a creamy consistency"},
+    {"answer":"concealer","aliases":["cover-up"],"note":"a product used to hide blemishes and dark circles","tier":"schooler"},
+    {"answer":"lipstick","aliases":["lip color"],"note":"a pigmented product applied on the lips","tier":"plankton"},
+    {"answer":"Blush","tier":"plankton"},
+    {"answer":"Eyeliner","tier":"plankton"}
   ],
   "Name a type of sandwich": [
     {"answer":"ploughman’s sandwich","aliases":["ploughman's"],"note":"British cold sandwich with cheese, pickle, and ham on bread"},
