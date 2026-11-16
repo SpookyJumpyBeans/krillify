@@ -1,55 +1,15 @@
-# Building Krillify
+# Krillify 1.2.0 design
 
-## The problem
+Krillify keeps the v1.1.1 answer-selection workflow and adds an independently written game-state adapter. A page-world script attaches read-only listeners to the game’s WebSocket and EventSource connections at document start. It applies snapshots and versioned patches, accumulates accepted pass answers for the current game, and forwards a small allowlisted state message to the isolated overlay. It does not send game actions, forward chat or credentials, or expose API keys.
 
-Puffer Party is a category game played under time pressure. Switching to a chat window, copying a question, and returning to the game takes too long. Krillify moves that interaction into the browser: read the visible category, find obscure candidates, and show three beside the game input.
+The overlay requests the latest state when it loads, so an early snapshot is not lost. Server game identity controls resets when available. A patch version mismatch or closed socket drops structured tracking and permits the existing DOM fallback. The fallback reads visible prompts and accepted player bubbles; typing, rejected guesses and chat are ignored. Accepted names and known aliases remove visible suggestions and filter in-flight replies.
 
-Version 1.1.1 is the base for this small, inspectable implementation. Published branding changes the displayed name to Krillify. Accepted opponent-answer tracking was added separately, without importing the later experimental prompt or messaging changes.
+The worker owns API access and local storage. Status checks read settings only, avoiding deserializing all cached banks on every status poll. Storage is restricted to trusted extension contexts. Requests for obsolete categories are cancelled. Network work runs outside the storage mutation queue, and a second history lookup handles answers accepted during generation.
 
-## Three parts, one local profile
+The cache holds up to 300 prompts and 60 candidates per prompt. Five original starter banks contain 57 candidates and work without an API key. Imports override starter lists. Both starter and AI rankings are estimates, not official acceptance or rarity data. Cached partial batches appear immediately.
 
-```mermaid
-flowchart LR
-    A[Visible game category] --> B[Content script and overlay]
-    B <-->|Extension messages| C[Background worker]
-    C <-->|Candidates and game records| D[(Local extension storage)]
-    C <-->|Uncached prompts| E[OpenAI API]
-```
+AI generation has a 14-second deadline. Only an HTTP 5xx failure occurring within 1.5 seconds is retried, once, after 750 ms. Authentication, billing, rate-limit and timeout failures require a manual retry. Suggestion messaging has an 18-second deadline. Retrying can incur another API charge.
 
-The content script polls the game DOM every 200 milliseconds. Its shadow-root panel is separate from the game’s styles. When the category changes, it sends the prompt and current game identifier to a module service worker. The worker reads cached candidates, excludes used answers, and returns up to three choices. Only an exhausted cache requires a model request.
+Validation covers snapshot/patch application, state replay, game resets, SSE, stale transport isolation, missing-patch fallback, and filtering private fields. Browser fixtures use the actual worker selection/history logic to check accepted aliases, chat/rejection filtering, in-flight exclusions, new-game reuse, and structured state overriding stale DOM. An unpacked-extension smoke test checks worker communication and on-page suggestions. These tests do not establish live-game acceptance rates or superiority over competing extensions.
 
-The worker owns API access and local data. The content script never receives the API key. Storage is restricted to trusted extension contexts, and model requests go directly to OpenAI rather than through a project backend.
-
-## A suggestion is not a used answer
-
-The answer bank and the current game’s used list serve different purposes. Cached candidates should survive across games; used answers should not prevent the best choices from returning in a new game.
-
-Krillify assigns each game a local scope derived from the room path and a random identifier. It watches the game’s lobby, countdown, game-over label and category counter to detect a new game. Same-tab session storage preserves the identifier through a refresh. Used-answer records remain scoped to that identifier, while the candidate cache is shared across games.
-
-Viewing or filling an answer does not exclude it. Enter, form submission, and the game’s Send answer button record your submission attempts, including rejected attempts. Known aliases are expanded from cached candidates. Names are normalized for case, punctuation and accents.
-
-Opponent tracking uses a MutationObserver over the rendered game. The inspected renderer marks accepted pass bubbles with `pf-say ok` and restored accepted answers with `pf-say rest`, inside a player’s `pf-seat`. Only those signals enter the used list. Typing previews, rejected guesses and ordinary chat are ignored. No game traffic is intercepted.
-
-New accepted answers immediately remove matching choices from the overlay. A debounced replacement request reuses the existing cache and history path. An in-memory exclusion set also filters replies from requests already in flight. Bubble fingerprints avoid duplicate tracking when a pass animation becomes a resting label. On a new game, the set is cleared and lingering old bubbles are suppressed until they change. Earlier accepted answers no longer rendered when the helper starts remain unobservable.
-
-## Keeping costs and latency down
-
-A model request asks for up to 18 candidates in JSON, ordered by estimated obscurity. The worker stores unused candidates so later batches can be served locally. Imported banks use the same selection path, making a no-key mode possible for covered prompts.
-
-Network requests run outside the storage queue. Only state changes are serialized, so a slow request from one tab does not hold up another tab’s cache lookup. The active request for a tab is cancelled when superseded. A second history check before returning answers handles submissions that happened while generation was running.
-
-The cache is bounded at 300 prompts and 60 candidates per prompt. This keeps storage finite, but it also means older categories may be evicted. Imported banks should be kept separately as source files.
-
-## Where the approach falls short
-
-Obscurity is a model estimate, not a lookup into Krillion’s private rarity table. A plausible, real answer can still be absent from the game’s curated answer set. Asking for established entities and canonical names reduces ambiguity without eliminating it.
-
-DOM polling depends on the game’s markup and animation classes. The preserved 1.1.1 selector can miss a category during transitions. The release also has known intermittent background-message timeout reports. A successful isolated request does not establish reliable operation throughout a live match.
-
-The extension deliberately keeps submission manual. Clicking a recommendation fills the input through the native input setter and dispatches an input event, but it does not submit the answer or play turns automatically.
-
-## Validation for this publication
-
-The four JavaScript files were syntax-checked and manifest references were checked against the packaged files. The original publication matched the restored v1.1.1 baseline apart from displayed branding. The subsequent opponent-tracking change was tested in a browser fixture using the actual worker selection/history logic: accepted aliases remove suggestions and trigger cached replacements, chat/typing/rejections are ignored, repeated resting bubbles do not create new requests, answers arriving during generation are filtered, and the next game can reuse previous opponent answers. No API key, browser profile, generated cache, room history or local debugging archive is included in the repository.
-
-This publication does not claim that later-version browser tests validate every v1.1.1 behavior. A live match was not run as part of preparing this repository.
+The implementation is plain JavaScript and Manifest V3. No competitor source, keys, user profiles, generated answer caches or debugging archives are included in the release.

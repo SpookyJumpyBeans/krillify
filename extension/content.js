@@ -14,7 +14,25 @@
   const usedInRoom = new Set();
   const bubbleVersions = new WeakMap();
   let replacementTimer;
+  let liveRoom = null;
+  window.addEventListener('message', event => {
+    if (event.source !== window || event.origin !== location.origin || event.data?.channel !== 'krillify-game-v1') return;
+    if (event.data.disconnected) { liveRoom = null; return; }
+    const r = event.data.room;
+    if (!r || typeof r.game !== 'string' || !/^[a-z0-9:._/-]{1,140}$/i.test(r.game) || !['lobby','countdown','round','over'].includes(r.phase) || typeof r.prompt !== 'string' || r.prompt.length > 500 || !Array.isArray(r.answers)) return;
+    liveRoom = r; syncGame();
+    const fresh = r.answers.slice(0,2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && !usedInRoom.has(answerKey(x.answer)));
+    for (const item of fresh) usedInRoom.add(answerKey(item.answer));
+    let removed = false;
+    for (const button of $('#choices').querySelectorAll('.pick')) if (button.answerKeys?.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
+    if (fresh.length) {
+      const scope = game;
+      send({type:'remember', game:scope, answers:fresh.map(x=>x.answer)}).then(() => { if (removed && game === scope && !busy && enabled && current) suggest(); });
+    }
+    scan();
+  });
   const answerKey = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  window.postMessage({channel:'krillify-request-state'}, location.origin);
   const alreadyUsed = item => [item.answer, ...(item.aliases || [])].some(value => usedInRoom.has(answerKey(value)));
   function trackAcceptedAnswers() {
     if (!game || lifecycle?.stage !== 'round') return;
@@ -49,6 +67,13 @@
   function syncGame() {
     const room = location.pathname;
     if (!/^\/party\/[^/]+/.test(room)) return false;
+    if (liveRoom && liveRoom.game.split(':')[0].toLowerCase() === room.split('/')[2]?.toLowerCase()) {
+      const next = room + ':server:' + liveRoom.game;
+      lifecycle = {id:'server:' + liveRoom.game, stage:liveRoom.phase, category:0};
+      if (next === game) return false;
+      if (game) for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
+      game = next; usedInRoom.clear(); shown = []; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren(); return true;
+    }
     const gameRoot = document.querySelector('.pf-root');
     if (!gameRoot || gameRoot.hasAttribute('data-loading')) return false;
     if (room !== roomPath) {
@@ -92,8 +117,9 @@
   function visible(el) { return !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden'; }
   function detect() {
     if (!/^\/party(?:\/|$)/.test(location.pathname)) return '';
+    if (liveRoom && liveRoom.game.split(':')[0].toLowerCase() === location.pathname.split('/')[2]?.toLowerCase()) return liveRoom.phase === 'round' ? liveRoom.prompt.trim() : '';
     if (custom && custom.isConnected && visible(custom)) return custom.textContent.trim();
-    const nodes = [...document.querySelectorAll('.pf-root .ds-card:not(.gone):not(.cleared) .prompt')];
+    const nodes = [...document.querySelectorAll('.pf-root .ds-card .prompt')];
     return nodes.reverse().find(el => visible(el) && !/^new category$/i.test(el.textContent.trim()))?.textContent.trim() || '';
   }
   function gameInput() {
@@ -132,7 +158,7 @@
       });
       $('#choices').append(button);
     }
-    $('#status').textContent = `${result.source === 'AI estimate' ? 'AI estimate' : result.source === 'imported bank' ? 'Answer bank' : 'Cached suggestions'} · ${available.length} unused option${available.length === 1 ? '' : 's'}`;
+    $('#status').textContent = `${result.source || 'Cached suggestions'} · ${available.length} unused option${available.length === 1 ? '' : 's'}`;
     updateButtons();
     if (available.length < result.answers.length) {
       // A pass can arrive during generation; discard it even if the reply is stale.
@@ -146,6 +172,7 @@
     if (Date.now() - lastStatus > 2500) {
       lastStatus = Date.now();
       const status = await send({type: 'status', game});
+      if (status?.error) { if (!busy && !shown.length) $('#status').textContent = status.error; return; }
       const wasEnabled = enabled; enabled = !!status?.enabled;
       if (!enabled) {
         if (wasEnabled) { ++generation; busy = false; $('#choices').replaceChildren(); }

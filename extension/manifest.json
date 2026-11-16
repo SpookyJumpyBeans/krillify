@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Krillify",
-  "version": "1.1.1",
-  "description": "Reads Puffer Party prompts and suggests three obscure answers without repeating previous suggestions.",
+  "version": "1.2.0",
+  "description": "Three obscure Puffer Party suggestions, live prompt detection, and used-answer tracking for each game.",
   "permissions": [
     "storage"
   ],
@@ -20,6 +20,17 @@
         "https://www.krillion.io/*"
       ],
       "js": [
+        "game-events.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://krillion.io/*",
+        "https://www.krillion.io/*"
+      ],
+      "js": [
         "content.js"
       ],
       "run_at": "document_idle"
@@ -30,5 +41,5 @@
     "default_popup": "options.html"
   },
   "options_page": "options.html",
-  "minimum_chrome_version": "102"
+  "minimum_chrome_version": "111"
 }

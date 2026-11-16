@@ -1,4 +1,12 @@
 export const normalize = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+// Original starter lists, ordered by estimated obscurity; not official acceptance/rarity data.
+export const starterBanks = {
+  nameaninsect:['Zorapteran','Grylloblattid','Strepsipteran','Webspinner','Snakefly','Alderfly','Dobsonfly','Scorpionfly','Twisted-wing parasite','Bristletail','Thrips','Lacewing'],
+  nameaneggdish:['Oeufs en meurette','Gyeran-jjim','Chawanmushi','Kuku sabzi','Menemen','Çılbır','Oeufs en cocotte','Tamagoyaki','Shakshuka','Frittata','Scotch egg','Omelette'],
+  nameacountryineastafrica:['Comoros','Djibouti','Eritrea','Seychelles','Burundi','Rwanda','Uganda','Tanzania','Kenya','Ethiopia','Somalia'],
+  namesomethingthatusessteam:['Aeolipile','Cataplana','Couscoussier','Autoclave','Steam hammer','Steam whistle','Steam turbine','Pressure cooker','Espresso machine','Steam iron'],
+  nameabuildingmaterial:['Mycelium','Cob','Hempcrete','Rammed earth','Pozzolan','Rammed chalk','Adobe','Bamboo','Cork','Limestone','Timber','Concrete']
+};
 export function cleanCandidates(values) {
   if (!Array.isArray(values)) return [];
   const seen = new Set();

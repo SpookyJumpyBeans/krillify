@@ -1,4 +1,4 @@
-import {normalize, cleanCandidates, takeThree} from './core.js';
+import {normalize, cleanCandidates, takeThree, starterBanks} from './core.js';
 
 // Secrets and history are available to extension pages and the worker, not page scripts/content scripts.
 const ready = chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'});
@@ -35,7 +35,8 @@ async function generate(prompt, settings, excluded, controller) {
         throw new Error('API rate limit reached. Wait a minute, then Retry.');
       }
       if (response.status === 404) throw new Error('Model unavailable. Check the model name in Settings.');
-      throw new Error(`AI service returned ${response.status}. Check the model in Settings or Retry.`);
+      const failure = new Error(`AI service returned ${response.status}. Check the model in Settings or Retry.`);
+      failure.retryable = response.status >= 500; throw failure;
     }
     const data = await Promise.race([response.json(), aborted]);
     const raw = data.choices?.[0]?.message?.content;
@@ -51,22 +52,25 @@ async function generate(prompt, settings, excluded, controller) {
 
 async function handle(message, sender, controller) {
   await ready;
-  const internal = !sender.tab && sender.url?.startsWith(chrome.runtime.getURL(''));
+  const internal = sender.url?.startsWith(chrome.runtime.getURL(''));
   const game = sender.tab && /^https:\/\/(www\.)?krillion\.io\//.test(sender.url || '');
   if (!internal && !game) throw new Error('Unrecognized sender.');
   if (message.type === 'cancel') return {};
   if (message.type === 'settings') { await chrome.runtime.openOptionsPage(); return {}; }
+  if (message.type === 'status') {
+    const {settings = {}} = await chrome.storage.local.get('settings');
+    return {enabled:!!settings.enabled,version:chrome.runtime.getManifest().version};
+  }
   const data = await chrome.storage.local.get(['settings', 'games', 'pools']);
   const settings = {...defaults, ...data.settings};
   const games = data.games && typeof data.games === 'object' ? data.games : {};
   const scope = typeof message.game === 'string' && /^[a-z0-9:._/-]{1,200}$/i.test(message.game) ? message.game : '';
   const history = Array.isArray(games[scope]?.used) ? games[scope].used : [];
   const pools = data.pools && typeof data.pools === 'object' ? data.pools : {};
-  if (message.type === 'status') return {enabled: settings.enabled, count: history.length};
   if (!scope) throw new Error('Game not detected yet. Refresh the game page.');
   if (message.type === 'remember') {
     const values = Array.isArray(message.answers) ? message.answers : [];
-    const next = new Set([...history, ...values.slice(0, 100).filter(x => typeof x === 'string').map(normalize)].filter(Boolean));
+    const next = new Set([...history, ...values.slice(0, 2500).filter(x => typeof x === 'string').map(normalize)].filter(Boolean));
     // Expand a submitted name to its known aliases, without marking unused suggestions.
     for (const pool of Object.values(pools)) for (const item of cleanCandidates(pool.answers)) {
       const keys = [item.answer, ...item.aliases].map(normalize);
@@ -80,14 +84,21 @@ async function handle(message, sender, controller) {
   const prompt = typeof message.prompt === 'string' ? message.prompt.trim().slice(0, 500) : '';
   if (!prompt) throw new Error('No prompt detected.');
   const key = 'q:' + normalize(prompt);
-  const excluded = Array.isArray(message.excluded) ? message.excluded.filter(x => typeof x === 'string').slice(0, 150) : [];
-  let pool = cleanCandidates(pools[key]?.answers);
+  const excluded = Array.isArray(message.excluded) ? message.excluded.filter(x => typeof x === 'string').slice(0, 2500) : [];
+  let pool = cleanCandidates(pools[key]?.answers || starterBanks[normalize(prompt)]);
   let picks = takeThree(pool, history, excluded);
-  let source = pools[key]?.source || 'cache';
+  let source = pools[key]?.source || (starterBanks[normalize(prompt)] ? 'Starter bank · acceptance unverified' : 'cache');
   let fresh = [];
   // A partial cached batch is useful immediately; do not hold it behind a slow refill.
   if (!picks.length && settings.apiKey) {
-    fresh = await generate(prompt, settings, [...history, ...pool.flatMap(x => [x.answer, ...x.aliases]), ...excluded].slice(-2500), controller);
+    const retryStarted = Date.now();
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try { fresh = await generate(prompt, settings, [...history, ...pool.flatMap(x => [x.answer, ...x.aliases]), ...excluded].slice(-2500), controller); break; }
+      catch (error) {
+        if (!error.retryable || attempt || controller.signal.aborted || Date.now()-retryStarted > 1500) throw error;
+        await new Promise(resolve => setTimeout(resolve, 750));
+      }
+    }
     // Retain the rarest cached entries for reuse in later games, but leave room for new answers.
     pool = cleanCandidates([...pool.slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
     picks = takeThree(pool, history, excluded);
