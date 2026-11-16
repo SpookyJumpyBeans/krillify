@@ -1,10 +1,10 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.6.0" src="https://img.shields.io/badge/version-1.6.0-9ce8cb?style=flat-square&labelColor=102438">
-  <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%2F%20Edge-4de3ff?style=flat-square&labelColor=102438">
-  <img alt="Manifest V3" src="https://img.shields.io/badge/extension-Manifest%20V3-ffd166?style=flat-square&labelColor=102438">
-  <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=flat-square&labelColor=102438">
+  <img alt="Version 1.6.0" src="https://img.shields.io/badge/version-1.6.0-4de3ff?style=for-the-badge&labelColor=0b1a2b">
+  <img alt="Works on Chrome and Edge" src="https://img.shields.io/badge/works_on-Chrome_%C2%B7_Edge-ffd166?style=for-the-badge&logo=googlechrome&logoColor=ffd166&labelColor=0b1a2b">
+  <img alt="Manifest V3" src="https://img.shields.io/badge/manifest-V3-9ce8cb?style=for-the-badge&labelColor=0b1a2b">
+  <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=for-the-badge&logo=opensourceinitiative&logoColor=9ce8cb&labelColor=0b1a2b">
 </p>
 
 # Krillify
