@@ -505,6 +505,26 @@
     {"answer":"o'clock","aliases":["of the clock"],"note":"contraction of 'of the clock', used in time expressions"},
     {"answer":"let's","aliases":["let us"],"note":"contraction of 'let us' used to make suggestions or commands"}
   ],
+  "Name a cooking method": [
+    {"answer":"en papillote","aliases":["in parchment"],"note":"steaming food wrapped in parchment paper"},
+    {"answer":"salting","aliases":["curing with salt"],"note":"preserving and flavoring food using salt"},
+    {"answer":"confit","aliases":["slow cooking in fat"],"note":"cooking meat slowly in its own fat"},
+    {"answer":"braising","aliases":["pot roasting"],"note":"browning food then slow cooking with liquid"},
+    {"answer":"blanching","aliases":["scalding"],"note":"brief boiling then cooling rapidly"},
+    {"answer":"poaching","aliases":["gentle simmering"],"note":"cooking food gently in hot liquid below boiling"},
+    {"answer":"steaming","aliases":["vapor cooking"],"note":"cooking food using steam heat"},
+    {"answer":"roasting","aliases":["oven baking"],"note":"dry heat cooking typically in an oven"},
+    {"answer":"grilling","aliases":["barbecuing"],"note":"cooking food on a grill over direct heat"},
+    {"answer":"broiling","aliases":["grilling directly"],"note":"exposing food to direct radiant heat from above"},
+    {"answer":"stewing","aliases":["slow simmering"],"note":"slow cooking small pieces in liquid over low heat"},
+    {"answer":"barbecue","aliases":["pit cooking"],"note":"slow cooking with smoke over indirect heat"},
+    {"answer":"searing","aliases":["surface browning"],"note":"quick cooking at high heat to brown surface","tier":"schooler"},
+    {"answer":"microwaving","aliases":["microwave cooking"],"note":"cooking food with microwave radiation","tier":"schooler"},
+    {"answer":"smoking","aliases":["smoke-curing"],"note":"flavoring and preserving food with smoke exposure","tier":"schooler"},
+    {"answer":"sous-vide","aliases":["under vacuum"],"note":"cooking food sealed in plastic at precise low temperatures","tier":"schooler"},
+    {"answer":"frying","aliases":["pan frying"],"note":"cooking food in hot fat or oil","tier":"plankton"},
+    {"answer":"Baking","tier":"plankton"}
+  ],
   "Name a country bigger than Mexico (by area)": [
     {"answer":"angola","aliases":["republic of angola"],"note":"Country in Southern Africa, area about 1,246,700 km², larger than Mexico's 1,964,375 km²"},
     {"answer":"gabon","aliases":["gaboon"],"note":"Central African country, approximately 267,668 km², smaller than Mexico but larger than many others, excluded if smaller"},
@@ -2383,6 +2403,23 @@
     {"answer":"buckskin shoe","aliases":["buck moccasin"],"note":"soft leather shoe originally from buck deer hide"},
     {"answer":"geta","aliases":["Japanese wooden sandal"],"note":"traditional Japanese wooden sandal with elevated base"}
   ],
+  "Name a type of tea": [
+    {"answer":"kukicha","aliases":["twig tea"],"note":"Japanese green tea made from twigs and stems"},
+    {"answer":"dong ding","aliases":["frozen summit"],"note":"Oolong tea from Taiwan known for its floral aroma"},
+    {"answer":"binchotan tea","aliases":["charcoal tea"],"note":"Japanese tea brewed with binchotan charcoal for smooth flavor"},
+    {"answer":"jangwon","aliases":["jangleaf"],"note":"Rare Korean fermented tea with earthy taste"},
+    {"answer":"kangra","aliases":["kangra black tea"],"note":"Black tea from the Kangra Valley in India"},
+    {"answer":"guayusa","aliases":["ivy leaf tea"],"note":"Energizing Amazonian herbal tea made from guayusa leaves"},
+    {"answer":"luan gong cha","aliases":["lantern palace tea"],"note":"Chinese tea from Yunnan with rich aroma"},
+    {"answer":"lu jun mei","aliases":["black dragon eyebrow"],"note":"Rare black tea from Sichuan province"},
+    {"answer":"longjing","aliases":["dragon well"],"note":"Famous Chinese green tea with chestnut aroma"},
+    {"answer":"baicha","aliases":["white tea"],"note":"Minimal oxidized tea from China"},
+    {"answer":"lapsang souchong","aliases":["smoked tea"],"note":"Black tea smoked over pine wood fires from Fujian"},
+    {"answer":"yuanyang","aliases":["coffee tea"],"note":"Hong Kong beverage blending tea and coffee"},
+    {"answer":"ceylon","aliases":["ceylon tea"],"note":"Black tea from Sri Lanka"},
+    {"answer":"assam","aliases":["assam black tea"],"note":"Malty black tea from Assam, India"},
+    {"answer":"darjeeling","aliases":["darjeeling tea"],"note":"Light black tea from Darjeeling, India"}
+  ],
   "Name a U.S. state entirely west of the Mississippi River": [
     {"answer":"Idaho","note":"U.S. state located entirely west of the Mississippi River"},
     {"answer":"Oregon","note":"U.S. state located entirely west of the Mississippi River"},
@@ -3119,6 +3156,34 @@
     {"answer":"zoophobia","note":"Irrational fear of animals"},
     {"answer":"zoogeography","note":"Study of the geographic distribution of animals"},
     {"answer":"zoomania","note":"Excessive enthusiasm for animals"}
+  ],
+  "Name an English word ending in “-bound”": [
+    {"answer":"homebound","aliases":["bound for home"],"note":"Heading or confined to one's home"},
+    {"answer":"earthbound","aliases":["terrestrial"],"note":"Confined to the earth, not flying"},
+    {"answer":"snowbound","aliases":["trapped by snow"],"note":"Unable to travel due to snow"},
+    {"answer":"eastbound","aliases":["heading east"],"note":"Traveling towards the east"},
+    {"answer":"northbound","aliases":["heading north"],"note":"Traveling towards the north"},
+    {"answer":"southbound","aliases":["heading south"],"note":"Traveling towards the south"},
+    {"answer":"sebound","aliases":["heading to the sea"],"note":"Less common term meaning bound for the sea (rare, archaic)"},
+    {"answer":"westbound","aliases":["heading west"],"note":"Traveling towards the west","tier":"schooler"},
+    {"answer":"spellbound","aliases":["entranced"],"note":"Held as if under a spell, fascinated","tier":"plankton"},
+    {"answer":"rebound","tier":"plankton"}
+  ],
+  "Name an English word ending in “-ward”": [
+    {"answer":"homeward","aliases":["homewards"],"note":"toward home or one's place of residence"},
+    {"answer":"leeward","aliases":["leeward"],"note":"on or toward the sheltered side away from the wind"},
+    {"answer":"seaward","aliases":["seawards"],"note":"toward the sea"},
+    {"answer":"northward","aliases":["northwards"],"note":"toward the north"},
+    {"answer":"eastward","aliases":["eastwards"],"note":"toward the east"},
+    {"answer":"westward","aliases":["westwards"],"note":"toward the west"},
+    {"answer":"southward","aliases":["southwards"],"note":"toward the south"},
+    {"answer":"upward","aliases":["upwards"],"note":"toward a higher place or position"},
+    {"answer":"downward","aliases":["downwards"],"note":"toward a lower place or position"},
+    {"answer":"afterward","aliases":["afterwards"],"note":"at a later or subsequent time"},
+    {"answer":"wayward","note":"following one's own capricious or rebellious inclinations"},
+    {"answer":"awkward","note":"lacking grace or ease in movement or manner"},
+    {"answer":"forward","aliases":["forwards"],"note":"in the direction that one is facing or moving"},
+    {"answer":"skyward","aliases":["skywards"],"note":"toward the sky","tier":"schooler"}
   ],
   "Name an English word starting with “thr”": [
     {"answer":"threnody","aliases":["threnodic poem"],"note":"a song or poem of mourning"},
