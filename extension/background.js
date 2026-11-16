@@ -1,4 +1,5 @@
 import {normalize, cleanCandidates, takeThree, starterBanks} from './core.js';
+import {indexBank, combinePool, mergeBank, serializeBank, cleanTier} from './bank.js';
 
 // Secrets and history are available to extension pages and the worker, not page scripts/content scripts.
 const ready = chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'});
@@ -6,6 +7,92 @@ let queue = Promise.resolve();
 const serial = action => { const result = queue.then(action); queue = result.catch(() => {}); return result; };
 const defaults = {enabled: false, model: 'gpt-4.1-mini', apiKey: ''};
 const active = new Map();
+
+// The shared bank ships with the extension, so every install gets it without a key.
+let bundledIndex;
+const bundled = () => bundledIndex ??= fetch(chrome.runtime.getURL('banks.json'))
+  .then(response => response.json()).then(indexBank).catch(() => new Map());
+
+// Answers other players got accepted, with the rarity tier the game gave them.
+async function recordSeen(message) {
+  const prompt = typeof message.prompt === 'string' ? message.prompt.trim().slice(0, 500) : '';
+  const values = Array.isArray(message.answers) ? message.answers.slice(0, 200) : [];
+  if (!normalize(prompt) || !values.length) return {};
+  const {verified = {}} = await chrome.storage.local.get('verified');
+  const key = 'q:' + normalize(prompt);
+  const record = verified[key] || {prompt, answers: {}};
+  for (const value of values) {
+    const answer = typeof value?.answer === 'string' ? value.answer.trim().slice(0, 120) : '';
+    const id = normalize(answer);
+    if (!id) continue;
+    const previous = record.answers[id];
+    record.answers[id] = {answer: previous?.answer || answer, tier: cleanTier(value.tier) || previous?.tier || '', n: (previous?.n || 0) + 1};
+  }
+  record.answers = Object.fromEntries(Object.entries(record.answers).slice(-200));
+  record.updated = Date.now(); verified[key] = record;
+  await chrome.storage.local.set({verified: Object.fromEntries(Object.entries(verified).sort((a, b) => b[1].updated - a[1].updated).slice(0, 500))});
+  return {};
+}
+
+// Maintainer mode: commit new prompts and verified answers to extension/banks.json on a branch.
+const bankPath = 'extension/banks.json';
+const fromBase64 = text => new TextDecoder().decode(Uint8Array.from(atob(text.replace(/\s/g, '')), c => c.charCodeAt(0)));
+function toBase64(text) {
+  const bytes = new TextEncoder().encode(text); let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
+}
+let syncing = null;
+const syncBank = force => syncing ??= runSync(force).finally(() => { syncing = null; });
+async function runSync(force) {
+  const {maintainer = {}, pools = {}, verified = {}, syncState = {}} = await chrome.storage.local.get(['maintainer', 'pools', 'verified', 'syncState']);
+  if (!maintainer.enabled) return {skipped: 'Maintainer mode is off.'};
+  const repo = maintainer.repo || '', branch = maintainer.branch || 'bank-updates';
+  if (!maintainer.token || !/^[\w.-]+\/[\w.-]+$/.test(repo)) throw new Error('Set the repository and GitHub token in Settings.');
+  if (!force && Date.now() - (syncState.at || 0) < 60000) return {skipped: 'Synced less than a minute ago.'};
+  if (!await chrome.permissions.contains({origins: ['https://api.github.com/*']})) throw new Error('GitHub access isn’t granted. Save the maintainer settings again.');
+  const github = (path, init = {}) => fetch(`https://api.github.com/repos/${repo}${path}`, {...init, headers: {
+    Accept: 'application/vnd.github+json', Authorization: `Bearer ${maintainer.token}`, 'X-GitHub-Api-Version': '2022-11-28',
+    ...(init.body ? {'Content-Type': 'application/json'} : {}), ...init.headers}});
+  const fail = (response, what) => {
+    if (response.status === 401) throw new Error('GitHub rejected the token. Check it in Settings.');
+    if (response.status === 403 || response.status === 404) throw new Error(`GitHub ${what} failed (${response.status}). The token needs Contents: read and write on ${repo}.`);
+    throw new Error(`GitHub ${what} failed (${response.status}).`);
+  };
+  const ref = await github(`/git/ref/heads/${encodeURIComponent(branch)}`);
+  if (ref.status === 404) {
+    const info = await github(''); if (!info.ok) fail(info, 'repository lookup');
+    const base = (await info.json()).default_branch;
+    const head = await github(`/git/ref/heads/${encodeURIComponent(base)}`); if (!head.ok) fail(head, 'branch lookup');
+    const created = await github('/git/refs', {method: 'POST', body: JSON.stringify({ref: `refs/heads/${branch}`, sha: (await head.json()).object.sha})});
+    if (!created.ok && created.status !== 422) fail(created, 'branch creation');
+  } else if (!ref.ok) fail(ref, 'branch lookup');
+  const at = `/contents/${bankPath}?ref=${encodeURIComponent(branch)}`;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const file = await github(at);
+    let sha, current = '', remote = {};
+    if (file.ok) {
+      const meta = await file.json(); sha = meta.sha;
+      if (meta.encoding === 'base64' && meta.content) current = fromBase64(meta.content);
+      else { const raw = await github(at, {headers: {Accept: 'application/vnd.github.raw+json'}}); if (!raw.ok) fail(raw, 'bank download'); current = await raw.text(); }
+      try { remote = JSON.parse(current); } catch { throw new Error(`${bankPath} on ${branch} isn’t valid JSON. Fix it on GitHub, then sync again.`); }
+    } else if (file.status !== 404) fail(file, 'bank download');
+    const {bank, prompts, answers} = mergeBank(remote, pools, verified);
+    const text = serializeBank(bank);
+    let result = 'Already up to date.';
+    if (text !== current) {
+      const plural = (n, word) => `${n} new ${word}${n === 1 ? '' : 's'}`;
+      const message = prompts || answers ? `Update answer bank: ${plural(prompts, 'prompt')}, ${plural(answers, 'answer')}` : 'Update answer bank rarity tiers';
+      const put = await github(`/contents/${bankPath}`, {method: 'PUT', body: JSON.stringify({message, content: toBase64(text), branch, ...(sha ? {sha} : {})})});
+      if ((put.status === 409 || put.status === 422) && !attempt) continue;
+      if (!put.ok) fail(put, 'commit');
+      result = `Committed to ${branch}: ${message}.`;
+    }
+    await chrome.storage.local.set({syncState: {at: Date.now(), result}});
+    return {result};
+  }
+  throw new Error('The bank changed on GitHub during the sync. Try again.');
+}
 
 async function generate(prompt, settings, excluded, controller) {
   if (!settings.apiKey) throw new Error('Open Settings and add an OpenAI API key, or import an answer bank.');
@@ -57,11 +144,19 @@ async function handle(message, sender, controller) {
   if (!internal && !game) throw new Error('Unrecognized sender.');
   if (message.type === 'cancel') return {};
   if (message.type === 'settings') { await chrome.runtime.openOptionsPage(); return {}; }
+  if (message.type === 'record') return serial(() => recordSeen(message));
+  if (message.type === 'sync') {
+    if (message.force && !internal) throw new Error('Unrecognized sender.');
+    return syncBank(!!message.force).catch(async error => {
+      await chrome.storage.local.set({syncState: {at: Date.now(), result: error.message, failed: true}});
+      throw error;
+    });
+  }
   if (message.type === 'status') {
     const {settings = {}} = await chrome.storage.local.get('settings');
     return {enabled:!!settings.enabled,version:chrome.runtime.getManifest().version};
   }
-  const data = await chrome.storage.local.get(['settings', 'games', 'pools']);
+  const data = await chrome.storage.local.get(['settings', 'games', 'pools', 'verified']);
   const settings = {...defaults, ...data.settings};
   const games = data.games && typeof data.games === 'object' ? data.games : {};
   const scope = typeof message.game === 'string' && /^[a-z0-9:._/-]{1,200}$/i.test(message.game) ? message.game : '';
@@ -85,11 +180,13 @@ async function handle(message, sender, controller) {
   if (!prompt) throw new Error('No prompt detected.');
   const key = 'q:' + normalize(prompt);
   const excluded = Array.isArray(message.excluded) ? message.excluded.filter(x => typeof x === 'string').slice(0, 2500) : [];
-  let pool = cleanCandidates(pools[key]?.answers || starterBanks[normalize(prompt)]);
+  const shared = (await bundled()).get(normalize(prompt))?.answers || [];
+  const seen = data.verified?.[key];
+  let pool = combinePool([pools[key]?.answers, shared, starterBanks[normalize(prompt)]], seen);
   // The overlay asks only for the slots it has free, so a used answer is replaced in place.
   const want = Number.isInteger(message.want) ? Math.min(3, Math.max(1, message.want)) : 3;
   let picks = takeThree(pool, history, excluded, want);
-  let source = pools[key]?.source || (starterBanks[normalize(prompt)] ? 'Starter bank · acceptance unverified' : 'cache');
+  let source = pools[key]?.source || (shared.length ? 'Shared bank' : starterBanks[normalize(prompt)] ? 'Starter bank · acceptance unverified' : 'cache');
   let fresh = [];
   // A new prompt shows a partial cached batch at once; a top-up request may wait for the AI
   // because the answers already on screen stay visible meanwhile.
@@ -106,7 +203,7 @@ async function handle(message, sender, controller) {
     } catch (error) { if (!picks.length || controller.signal.aborted) throw error; }
     if (fresh.length) {
       // Retain the rarest cached entries for reuse in later games, but leave room for new answers.
-      pool = cleanCandidates([...pool.slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
+      pool = combinePool([pool.slice(0, Math.max(0, 60 - fresh.length)), fresh], seen);
       picks = takeThree(pool, history, excluded, want);
       source = 'AI estimate';
     }
@@ -119,7 +216,7 @@ async function handle(message, sender, controller) {
     const latest = await chrome.storage.local.get(['pools', 'games']);
     const latestPools = latest.pools || {};
     const latestHistory = latest.games?.[scope]?.used || [];
-    if (fresh.length) pool = cleanCandidates([...(latestPools[key]?.answers || []).slice(0, Math.max(0, 60 - fresh.length)), ...fresh]);
+    if (fresh.length) pool = combinePool([combinePool([latestPools[key]?.answers, pool], seen).slice(0, Math.max(0, 60 - fresh.length)), fresh], seen);
     picks = takeThree(pool, latestHistory, excluded, want);
     if (!picks.length) throw new Error('No unused answers left in this batch. Click Retry.');
     latestPools[key] = {prompt, answers: pool, source, updated: Date.now()};
@@ -139,6 +236,7 @@ chrome.runtime.onMessage.addListener((message, sender, reply) => {
   }
   const run = () => handle(message || {}, sender, controller);
   const result = message?.type === 'remember' ? serial(run) : run();
+  // 'record' takes the storage lock inside handle(); 'sync' runs its network calls outside it.
   result.then(reply, error => reply({error: error.message || 'Unexpected error. Reload the page.'})).finally(() => {
     if (controller && active.get(sender.tab?.id) === controller) active.delete(sender.tab?.id);
   });

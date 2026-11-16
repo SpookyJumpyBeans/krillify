@@ -60,12 +60,25 @@
   const bubbleVersions = new WeakMap();
   let replacementTimer;
   let liveRoom = null;
+  // The feed doesn't say which category an accepted answer belongs to, so an answer is only
+  // credited to the prompt when it arrives mid-round with the same prompt as the update before.
+  // The first update after (re)connecting, and any update that changes the prompt, are skipped.
+  let feedGame = '', feedPrompt = '', syncedGame = '';
+  const feedSeen = new Set();
+  function recordFeed(r) {
+    const arrived = r.answers.slice(0, 2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && answerKey(x.answer) && !feedSeen.has(answerKey(x.answer)));
+    arrived.forEach(x => feedSeen.add(answerKey(x.answer)));
+    const steady = r.game === feedGame && r.prompt === feedPrompt && r.phase === 'round' && r.prompt.trim();
+    if (r.game !== feedGame) { feedSeen.clear(); r.answers.forEach(x => typeof x?.answer === 'string' && feedSeen.add(answerKey(x.answer))); }
+    feedGame = r.game; feedPrompt = r.prompt;
+    if (steady && arrived.length) send({type: 'record', prompt: r.prompt.trim(), answers: arrived.map(x => ({answer: x.answer, tier: typeof x.tier === 'string' ? x.tier : ''}))});
+  }
   window.addEventListener('message', event => {
     if (event.source !== window || event.origin !== location.origin || event.data?.channel !== 'krillify-game-v1') return;
-    if (event.data.disconnected) { liveRoom = null; return; }
+    if (event.data.disconnected) { liveRoom = null; feedGame = ''; return; }
     const r = event.data.room;
     if (!r || typeof r.game !== 'string' || !/^[a-z0-9:._/-]{1,140}$/i.test(r.game) || !['lobby','countdown','round','over'].includes(r.phase) || typeof r.prompt !== 'string' || r.prompt.length > 500 || !Array.isArray(r.answers)) return;
-    liveRoom = r; syncGame();
+    liveRoom = r; syncGame(); recordFeed(r);
     const fresh = r.answers.slice(0,2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && !usedInRoom.has(answerKey(x.answer)));
     for (const item of fresh) usedInRoom.add(answerKey(item.answer));
     const removed = dropUsed();
@@ -248,6 +261,7 @@
   }
   async function scan() {
     syncGame();
+    if (lifecycle?.stage === 'over' && game && syncedGame !== game) { syncedGame = game; send({type: 'sync'}); }
     trackAcceptedAnswers();
     if (Date.now() - lastStatus > 2500) {
       lastStatus = Date.now();

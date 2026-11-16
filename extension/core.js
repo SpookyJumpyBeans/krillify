@@ -7,6 +7,8 @@ export const starterBanks = {
   namesomethingthatusessteam:['Aeolipile','Cataplana','Couscoussier','Autoclave','Steam hammer','Steam whistle','Steam turbine','Pressure cooker','Espresso machine','Steam iron'],
   nameabuildingmaterial:['Mycelium','Cob','Hempcrete','Rammed earth','Pozzolan','Rammed chalk','Adobe','Bamboo','Cork','Limestone','Timber','Concrete']
 };
+// Rarity tiers Puffer Party reports for accepted answers, plus "accepted" when none was given.
+export const tiers = ['krillion', 'deepcut', 'rare', 'accepted', 'tooclever', 'schooler', 'plankton'];
 export function cleanCandidates(values) {
   if (!Array.isArray(values)) return [];
   const seen = new Set();
@@ -18,18 +20,30 @@ export function cleanCandidates(values) {
     const keys = [answer, ...aliases].map(normalize).filter(Boolean);
     if (!keys.length || keys.some(key => seen.has(key))) return [];
     keys.forEach(key => seen.add(key));
-    return [{answer, aliases, note: typeof item.note === 'string' ? item.note.slice(0, 150) : ''}];
+    const out = {answer, aliases, note: typeof item.note === 'string' ? item.note.slice(0, 150) : ''};
+    const tier = normalize(item.tier);
+    if (tiers.includes(tier)) out.tier = tier;
+    return [out];
   });
 }
-export function takeThree(pool, history, excluded = [], limit = 3) {
+// Picks at random from the rarest few unused answers, so players sharing a bank don't all
+// give the same ones. The picks keep their bank order, rarest first.
+export function takeThree(pool, history, excluded = [], limit = 3, random = Math.random) {
   const blocked = new Set([...history, ...excluded].map(normalize));
-  const selected = [];
+  const open = [];
   for (const item of cleanCandidates(pool)) {
     const keys = [item.answer, ...item.aliases].map(normalize);
     if (keys.some(key => blocked.has(key))) continue;
-    selected.push(item);
+    open.push(item);
     keys.forEach(key => blocked.add(key));
-    if (selected.length >= limit) break;
+    if (open.length >= Math.max(6, limit * 2)) break;
   }
-  return selected;
+  // Partial Fisher-Yates shuffle of the indexes: always ends, never repeats a pick.
+  const order = open.map((_, index) => index), count = Math.min(limit, open.length);
+  for (let k = 0; k < count; k++) {
+    const j = k + Math.min(order.length - k - 1, Math.floor(random() * (order.length - k)));
+    [order[k], order[j]] = [order[j], order[k]];
+  }
+  const chosen = new Set(order.slice(0, count));
+  return open.filter((_, index) => chosen.has(index));
 }

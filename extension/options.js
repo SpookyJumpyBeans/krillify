@@ -35,3 +35,29 @@ $('bank').addEventListener('change', async () => {
     await chrome.storage.local.set({pools}); $('status').textContent = `Imported ${count} prompt(s).`;
   } catch (error) { $('status').textContent = error.message; }
 });
+
+// Maintainer mode: GitHub access is an optional permission, requested only when it's turned on.
+const github = {origins: ['https://api.github.com/*']};
+async function loadMaintainer() {
+  const {maintainer = {}, syncState} = await chrome.storage.local.get(['maintainer', 'syncState']);
+  $('mEnabled').checked = !!maintainer.enabled; $('mRepo').value = maintainer.repo || '';
+  $('mBranch').value = maintainer.branch || 'bank-updates'; $('mToken').value = maintainer.token || '';
+  if (syncState) $('mStatus').textContent = `Last sync ${new Date(syncState.at).toLocaleString()}: ${syncState.result}`;
+}
+await loadMaintainer();
+$('maintainer').addEventListener('submit', async event => {
+  event.preventDefault();
+  const enabled = $('mEnabled').checked;
+  // Ask before any await so the click still counts as the user gesture Chrome requires.
+  const granted = enabled ? chrome.permissions.request(github) : chrome.permissions.remove(github).then(() => true);
+  try {
+    if (!await granted) { $('mStatus').textContent = 'GitHub access was declined, so maintainer mode stays off.'; $('mEnabled').checked = false; return; }
+    await chrome.storage.local.set({maintainer: {enabled, repo: $('mRepo').value.trim(), branch: $('mBranch').value.trim() || 'bank-updates', token: $('mToken').value.trim()}});
+    $('mStatus').textContent = enabled ? 'Saved. The bank syncs when each game ends.' : 'Saved. Maintainer mode is off.';
+  } catch (error) { $('mStatus').textContent = error.message || 'Could not save.'; }
+});
+$('syncNow').onclick = async () => {
+  $('mStatus').textContent = 'Syncing…';
+  const result = await chrome.runtime.sendMessage({type: 'sync', force: true}).catch(error => ({error: error.message}));
+  $('mStatus').textContent = result?.error || result?.skipped || result?.result || 'Done.';
+};
