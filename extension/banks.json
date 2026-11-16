@@ -1913,8 +1913,10 @@
   ],
   "Name a kitchen appliance (something powered)": [
     {"answer":"Proofer","tier":"deepcut"},
+    {"answer":"Frozen drink maker","tier":"deepcut"},
     {"answer":"automatic can opener","aliases":["electric can opener"],"note":"powered device to open tin cans","tier":"rare"},
     {"answer":"Immersion blender","tier":"rare"},
+    {"answer":"Bread maker","tier":"rare"},
     {"answer":"rotimatic","aliases":["automatic roti maker"],"note":"automatic Indian flatbread maker"},
     {"answer":"potato ricer","aliases":["food ricer"],"note":"handheld appliance that presses cooked potatoes through small holes"},
     {"answer":"electric butter churner","aliases":["butter churn"],"note":"machine that churns cream into butter electrically"},
@@ -1938,10 +1940,12 @@
     {"answer":"Coffee maker","tier":"schooler"},
     {"answer":"Espresso machine","tier":"schooler"},
     {"answer":"Kettle","tier":"schooler"},
+    {"answer":"Freezer","tier":"schooler"},
     {"answer":"Blender","tier":"plankton"},
     {"answer":"Oven","tier":"plankton"},
     {"answer":"Refrigerator","tier":"plankton"},
-    {"answer":"Toaster","tier":"plankton"}
+    {"answer":"Toaster","tier":"plankton"},
+    {"answer":"Stove","tier":"plankton"}
   ],
   "Name a language spoken in Europe": [
     {"answer":"Asturian","tier":"deepcut"},
