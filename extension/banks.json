@@ -1715,6 +1715,20 @@
     {"answer":"bamboo lemur","aliases":["hapalemur"],"note":"though a primate, locally called ‘bamboo rat’ but not a true rodent (excluded)"},
     {"answer":"degus","aliases":["octodon degus"],"note":"social rodent native to Chile known for daylight activity"}
   ],
+  "Name a Scooby-Doo character": [
+    {"answer":"Mr. E","aliases":["Mr. E from Scooby-Doo! Mystery Incorporated"],"note":"A mysterious and recurring character in Scooby-Doo! Mystery Incorporated"},
+    {"answer":"Professor Pericles","aliases":["Pericles"],"note":"A hyper-intelligent parrot featured in Scooby-Doo! Mystery Incorporated"},
+    {"answer":"Hot Dog Water","aliases":["Marcie Fleach"],"note":"A recurring character and antagonist in Scooby-Doo! Mystery Incorporated"},
+    {"answer":"Angel Dynamite","aliases":["Angel Dynamite from Mystery Incorporated"],"note":"A DJ and friend of the gang in Scooby-Doo! Mystery Incorporated"},
+    {"answer":"Flim-Flam","aliases":["Flim Flam"],"note":"A con artist who appears in various Scooby-Doo episodes"},
+    {"answer":"Scrappy-Doo","aliases":["Scrappy"],"note":"Scooby-Doo's energetic nephew"},
+    {"answer":"Dynomutt","aliases":["Dynomutt, Dog Wonder"],"note":"A robotic dog who teams up with Scooby-Doo in spin-offs"},
+    {"answer":"Fred Jones","aliases":["Fred"],"note":"The leader of the Mystery Inc. gang"},
+    {"answer":"Daphne Blake","aliases":["Daphne"],"note":"The fashionable and resourceful member of Mystery Inc."},
+    {"answer":"Velma Dinkley","aliases":["Velma"],"note":"The brains of the Mystery Inc. gang"},
+    {"answer":"Shaggy Rogers","aliases":["Norville Rogers"],"note":"Scooby-Doo's best friend and one half of the mystery-solving duo"},
+    {"answer":"Scooby-Doo","aliases":["Scoob"],"note":"The title character, a talking Great Dane","tier":"plankton"}
+  ],
   "Name a Sesame Street character": [
     {"answer":"Biff","aliases":["Biff"],"note":"Human character known as a playground kid on Sesame Street."},
     {"answer":"Forgetful Jones","aliases":["Forgetful Jones"],"note":"A forgetful cowboy character who appears on Sesame Street."},
@@ -2650,6 +2664,29 @@
     {"answer":"lycos mail","aliases":["lycos"],"note":"Early web portal and email provider"},
     {"answer":"outlook","aliases":["outlook.com"],"note":"Microsoft's web-based email service"}
   ],
+  "Name an energy drink brand": [
+    {"answer":"Cocaine Energy","aliases":["Cocaine Energy Drink"],"note":"An illicitly themed energy drink brand known for its controversial marketing","tier":"krillion"},
+    {"answer":"Uptime","tier":"deepcut"},
+    {"answer":"Hiball","tier":"deepcut"},
+    {"answer":"Uptime Energy","aliases":["Uptime Energy Drink"],"note":"A less commonly known energy drink brand originating in the United States"},
+    {"answer":"HiBall Energy","aliases":["HiBall Organic Energy"],"note":"An organic energy drink brand emphasizing natural ingredients"},
+    {"answer":"Bawls Guarana","aliases":["Bawls"],"note":"A niche energy soda featuring guarana extract"},
+    {"answer":"Vespyr Energy","aliases":["Vespyr"],"note":"A Canadian energy drink brand with focus on natural caffeine sources"},
+    {"answer":"Purple Hornet","aliases":["Purple Hornet Energy Drink"],"note":"An obscure high-caffeine energy drink available in select markets"},
+    {"answer":"A-Shoc","aliases":["A-Shoc Energy Drink"],"note":"A clean label energy brand with focus on plant-based ingredients"},
+    {"answer":"Hammerhead Energy","aliases":["Hammerhead"],"note":"An energy drink brand available primarily in the American South"},
+    {"answer":"Xyience","aliases":["Xyience Energy"],"note":"A fitness-oriented energy drink popular among bodybuilders"},
+    {"answer":"Hyde Power Potion","aliases":["Hyde Energy Drink"],"note":"A high-caffeine energy drink known for bold flavors"},
+    {"answer":"Velox Energy","aliases":["Velox"],"note":"Energy drink brand focused on enhancing mental focus and endurance"},
+    {"answer":"Jaguar Energy","aliases":["Jaguar"],"note":"A Latin American energy drink brand available in several countries"},
+    {"answer":"Black Premium","aliases":["Black Energy Drink"],"note":"A European energy drink with a strong coffee flavor"},
+    {"answer":"Venom Energy","aliases":["Venom Energy Drink"],"note":"A venom-themed US energy drink brand with aggressive marketing"},
+    {"answer":"Full Throttle","aliases":["Full Throttle Energy"],"note":"A Coca-Cola owned energy drink brand with a loyal following"},
+    {"answer":"NOS","aliases":["NOS Energy Drink"],"note":"An energy drink named after nitrous oxide systems in racing cars"},
+    {"answer":"Rockstar","aliases":["Rockstar Energy Drink"],"note":"One of the largest global energy drink brands"},
+    {"answer":"Alani Nu","tier":"schooler"},
+    {"answer":"Monster","aliases":["Monster Energy"],"note":"A leading global energy drink brand known for sponsorships in extreme sports","tier":"plankton"}
+  ],
   "Name an English word containing “art”": [
     {"answer":"cartouche","aliases":["cartouch"],"note":"an ornamental frame in art and architecture"},
     {"answer":"quartet","note":"a group of four musicians or singers"},
@@ -2815,6 +2852,23 @@
     {"answer":"zoogeography","note":"Study of the geographic distribution of animals"},
     {"answer":"zoomania","note":"Excessive enthusiasm for animals"}
   ],
+  "Name an English word starting with “thr”": [
+    {"answer":"threnody","aliases":["threnodic poem"],"note":"a song or poem of mourning"},
+    {"answer":"thrasonical","aliases":["boastful"],"note":"characterized by boastfulness"},
+    {"answer":"thrall","aliases":["serf"],"note":"a person in bondage or servitude"},
+    {"answer":"threescore","aliases":["sixty"],"note":"the number sixty"},
+    {"answer":"thricely","aliases":["three times"],"note":"done three times"},
+    {"answer":"throve","aliases":["thrived"],"note":"past tense of thrive"},
+    {"answer":"thrum","aliases":["loom-thread"],"note":"to make a continuous rhythmic humming sound"},
+    {"answer":"thrush","aliases":["bird"],"note":"a type of songbird"},
+    {"answer":"thrift","aliases":["saving"],"note":"the quality of using money and resources wisely"},
+    {"answer":"thrash","aliases":["beat"],"note":"to hit repeatedly"},
+    {"answer":"thread","aliases":["filament"],"note":"a fine cord of twisted fibers"},
+    {"answer":"thrive","aliases":["flourish"],"note":"to prosper or grow vigorously"},
+    {"answer":"throng","aliases":["crowd"],"note":"a large group of people gathered closely together"},
+    {"answer":"throb","aliases":["pulsate"],"note":"to beat with increased force or rhythm"},
+    {"answer":"three","aliases":["number 3"],"note":"the integer following two"}
+  ],
   "Name an English word with three or more S’s": [
     {"answer":"possessiveness","aliases":["possessiveness"],"note":"The quality of having or showing possession, containing four S's."},
     {"answer":"dispossessive","aliases":["dispossessive"],"note":"Relating to depriving someone of possession, contains four S's."},
@@ -2942,6 +2996,19 @@
     {"answer":"polishpassport","aliases":["passportpl"],"note":"Official travel document issued by Poland"},
     {"answer":"singaporeanidentitycard","aliases":["singpass"],"note":"Official ID card issued in Singapore"},
     {"answer":"nigeriannationalidentitycard","aliases":["nidcard"],"note":"Official identity card issued in Nigeria"}
+  ],
+  "Name an Olivia Rodrigo song": [
+    {"answer":"Honeybee","tier":"rare"},
+    {"answer":"jealousy jealousy","note":"A track from Olivia Rodrigo's album 'Guts' released in 2023"},
+    {"answer":"bad idea right?","note":"A reflective track from Olivia Rodrigo's second album"},
+    {"answer":"ballad of a homeschooled girl","note":"A storytelling song from 'Guts' album"},
+    {"answer":"traitor","note":"Popular single from Olivia Rodrigo's debut album 'Sour'"},
+    {"answer":"drivers license","note":"Breakout single that launched Olivia Rodrigo's career"},
+    {"answer":"happier","note":"A melancholic track from 'Sour'"},
+    {"answer":"enough for you","note":"A song exploring vulnerability from 'Sour'"},
+    {"answer":"get him back!","note":"An emotionally charged song from 'Guts,' 2023","tier":"schooler"},
+    {"answer":"hope ur ok","note":"A song on the album 'Guts' by Olivia Rodrigo","tier":"schooler"},
+    {"answer":"deja vu","note":"Hit single from the album 'Sour'","tier":"plankton"}
   ],
   "Name something a cowboy wears or carries": [
     {"answer":"poncho","aliases":["serape"],"note":"cloaks of woven fabric used for weather","tier":"rare"},
