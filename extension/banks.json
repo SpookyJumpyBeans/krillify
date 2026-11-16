@@ -249,6 +249,19 @@
     {"answer":"Funeral","tier":"plankton"},
     {"answer":"Wedding","tier":"plankton"}
   ],
+  "Name a character from Disney's Aladdin": [
+    {"answer":"Abis Mal","aliases":["The Thief"],"note":"Clumsy and comedic thief character","tier":"deepcut"},
+    {"answer":"Razoul","aliases":["Captain of the Guards"],"note":"The captain in Agrabah's palace guard","tier":"rare"},
+    {"answer":"Hakim","aliases":["The Merchant"],"note":"Merchant who interacts with Aladdin at the market"},
+    {"answer":"Dalia","aliases":["Jasmine's handmaiden"],"note":"Princess Jasmine's loyal handmaid"},
+    {"answer":"Iago","aliases":["Jafar's parrot"],"note":"Jafar's sarcastic red parrot sidekick who provides comic relief."},
+    {"answer":"Rajah","aliases":["Jasmine's tiger"],"note":"Princess Jasmine's protective pet tiger."},
+    {"answer":"Sultan","aliases":["Jasmine's father"],"note":"The benevolent ruler of Agrabah and Jasmine's father."},
+    {"answer":"Prince Achmed","aliases":["The suitor"],"note":"One of the suitors competing for Princess Jasmine's hand."},
+    {"answer":"Carpet","aliases":["Magic Carpet"],"note":"The flying magic carpet companion of Aladdin."},
+    {"answer":"Genie","tier":"plankton"},
+    {"answer":"Jasmine","tier":"plankton"}
+  ],
   "Name a character from How I Met Your Mother": [
     {"answer":"Ranjit"},
     {"answer":"Scooter"},
@@ -5547,6 +5560,27 @@
     {"answer":"objection","tier":"plankton"},
     {"answer":"objective","tier":"plankton"},
     {"answer":"rejection","tier":"plankton"}
+  ],
+  "Name an English word containing “mono”": [
+    {"answer":"monolithically","aliases":["monolithically"],"note":"In a uniform or indivisible manner","tier":"rare"},
+    {"answer":"monodrama","aliases":["monodrama"],"note":"Dramatic piece performed by one actor","tier":"rare"},
+    {"answer":"monophagous","aliases":["monophagous"],"note":"Feeding on a single kind of food"},
+    {"answer":"monopsony","aliases":["monopsony"],"note":"Market condition with single buyer"},
+    {"answer":"mononuclear","aliases":["mononuclear"],"note":"Having a single nucleus, as in a cell"},
+    {"answer":"monocarpic","aliases":["monocarpic"],"note":"Flowering once before dying"},
+    {"answer":"monoclinic","aliases":["monoclinic"],"note":"Describing a crystal system with one oblique angle"},
+    {"answer":"monotonous","aliases":["monotonous"],"note":"Lacking variety; tediously unvarying"},
+    {"answer":"monogamous","aliases":["monogamous"],"note":"Having one mate at a time"},
+    {"answer":"monolingual","aliases":["monolingual"],"note":"Using or speaking only one language"},
+    {"answer":"monolithic","aliases":["monolithic"],"note":"Formed of a single block of stone, or uniform and large"},
+    {"answer":"monochrome","aliases":["monochrome"],"note":"Having one color or shades of one color"},
+    {"answer":"monotreme","aliases":["monotreme"],"note":"Egg-laying mammal like platypus"},
+    {"answer":"monologue","aliases":["monologue"],"note":"Speech by one person"},
+    {"answer":"monosaccharide","aliases":["monosaccharide"],"note":"Simplest form of sugar molecule"},
+    {"answer":"monopoly","aliases":["monopoly"],"note":"Exclusive control over a commodity or service"},
+    {"answer":"monoxide","aliases":["monoxide"],"note":"Chemical compound with one oxygen atom"},
+    {"answer":"monogram","tier":"schooler"},
+    {"answer":"monolith","tier":"schooler"}
   ],
   "Name an English word containing “multi”": [
     {"answer":"multifarious","aliases":["diverse"],"note":"having many varied parts or aspects"},
