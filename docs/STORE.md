@@ -17,22 +17,25 @@ python tools/store-art/capture.py # dist/store-art/*.png
 
 **Language:** English
 
-**Description:**
+**Description** (plain text; copy everything inside the block):
 
-> Krillify puts three answer suggestions next to Puffer Party, Krillion's multiplayer category game. Read the category, click a suggestion to fill the answer box, then press Enter yourself.
->
-> What it does
-> • Shows three unused answers for the current category, rarest first, picked at random from the best few so players don't all give the same ones.
-> • Ranks answers by what the game has actually accepted, and stops suggesting answers the game rejected.
-> • Tracks every answer played in your game, including the short or alternate names Krillion accepts, so the panel doesn't offer answers that have already been said. When a card is used, only that card is replaced.
-> • Works without an API key on hundreds of prompts from the built-in answer bank. Add your own OpenAI API key to get suggestions for any prompt.
->
-> Things to know
-> • Krillify never plays for you. It fills the box when you click, and you decide whether to submit.
-> • Rarity is estimated and acceptance isn't guaranteed. The game's own answer list decides.
-> • Your settings, cache and API key stay in your browser. With a key, the category and answer names go to OpenAI to generate suggestions. There are no analytics, ads or developer servers.
->
-> Krillify is an independent, unofficial project. It is not affiliated with or endorsed by Krillion. Source code: https://github.com/SpookyJumpyBeans/krillify
+```text
+Krillify puts three answer suggestions next to Puffer Party, Krillion's multiplayer category game. Read the category, click a suggestion to fill the answer box, then press Enter yourself.
+
+What it does
+• Shows three unused answers for the current category, rarest first, picked at random from the best few so players don't all give the same ones.
+• Ranks answers by what the game has actually accepted, and stops suggesting answers the game rejected.
+• Tracks every answer played in your game, including the short or alternate names Krillion accepts, so the panel doesn't offer answers that have already been said. When a card is used, only that card is replaced.
+• Works without an API key on hundreds of prompts from the built-in answer bank. Add your own OpenAI API key to get suggestions for any prompt.
+
+Things to know
+• Krillify never plays for you. It fills the box when you click, and you decide whether to submit.
+• Rarity is estimated and acceptance isn't guaranteed. The game's own answer list decides.
+• Your settings, cache and API key stay in your browser. With a key, the category and answer names go to OpenAI to generate suggestions. There are no analytics, ads or developer servers.
+
+Krillify is an independent, unofficial project. It is not affiliated with or endorsed by Krillion.
+Source code: https://github.com/SpookyJumpyBeans/krillify
+```
 
 **Images** (in `dist/store-art/`):
 - Store icon: `extension/icons/icon-128.png`
