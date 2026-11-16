@@ -57,6 +57,8 @@
   let lastStatus = 0, failure = false, lastSubmit = '', lastReplace = true;
   let game = '', lifecycle = null, roomPath = '';
   const usedInRoom = new Set();
+  // The raw text of every used answer this game, for short-form matching (see sameThing).
+  const usedText = new Set();
   const bubbleVersions = new WeakMap();
   let replacementTimer;
   let liveRoom = null;
@@ -64,6 +66,8 @@
   // ("miss"), with its category's text. Answers from a category this tab never saw arrive with
   // an empty prompt and aren't recorded.
   let feedGame = '', syncedGame = '';
+  // What you last submitted with the feed connected, to pair with the game's name for it.
+  let pendingSubmit = null;
   const feedSeen = new Set();
   const feedRejects = r => Array.isArray(r.rejects) ? r.rejects.slice(0, 500) : [];
   function recordFeed(r) {
@@ -95,7 +99,19 @@
     // out of play for the rest of this game.
     const played = [...r.answers.slice(0, 2500).map(x => x?.answer), ...feedRejects(r).map(x => x?.text)];
     const fresh = played.filter(x => typeof x === 'string' && x.length <= 120 && answerKey(x) && !usedInRoom.has(answerKey(x)));
-    for (const answer of fresh) usedInRoom.add(answerKey(answer));
+    // Krillion may accept your answer under a different name ("Korean steamed eggs" for
+    // "Gyeran-jjim"). When your own accepted answer arrives shortly after you submitted, what you
+    // submitted is used too, and if it was a card the game's name is saved as its alias.
+    const mineNew = r.answers.filter(x => x?.mine === true && typeof x.answer === 'string' && fresh.includes(x.answer));
+    if (pendingSubmit && mineNew.length === 1 && pendingSubmit.game === game && Date.now() - pendingSubmit.at < 5000) {
+      const said = pendingSubmit, got = mineNew[0];
+      pendingSubmit = null;
+      if (!sameThing(said.text, got.answer)) {
+        markUsed(said.text);
+        if (said.fromBank && typeof got.prompt === 'string' && got.prompt.trim()) send({type: 'record', prompt: got.prompt.trim(), answers: [{answer: got.answer, tier: typeof got.tier === 'string' ? got.tier : '', aliases: [said.text]}]});
+      }
+    }
+    for (const answer of fresh) markUsed(answer);
     const removed = dropUsed();
     if (fresh.length) {
       const scope = game;
@@ -119,12 +135,30 @@
   // Remove only the cards that were used; the rest stay where they are.
   function dropUsed() {
     let removed = false;
-    for (const button of cards()) if (button.answerKeys.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
+    for (const button of cards()) if (isUsed(button.answerTexts)) { button.remove(); removed = true; }
     if (removed) renumber();
     return removed;
   }
   const refill = () => { if (current && enabled && game && cards().length < 3) suggest({replace: false}); };
-  const alreadyUsed = item => [item.answer, ...(item.aliases || [])].some(value => usedInRoom.has(answerKey(value)));
+  // Copy of answerWords/sameThing in core.js (content scripts can't import modules); change both
+  // together. Krillion often accepts and reports a short form ("Hiball" for "Hiball Energy"), so
+  // two answers match when one, spaces ignored, equals the first whole words of the other.
+  const answerWords = value => {
+    const words = String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    while (words.length > 1 && ['the', 'a', 'an'].includes(words[0])) words.shift();
+    return words;
+  };
+  const leads = (short, long) => {
+    const target = short.join('');
+    if (target.length < 3) return false;
+    let joined = '';
+    for (const word of long) { joined += word; if (joined === target) return true; if (joined.length >= target.length) return false; }
+    return false;
+  };
+  const sameThing = (a, b) => { const x = answerWords(a), y = answerWords(b); return leads(x, y) || leads(y, x); };
+  function markUsed(text) { usedInRoom.add(answerKey(text)); usedText.add(text); }
+  const isUsed = texts => texts.some(value => usedInRoom.has(answerKey(value)) || [...usedText].some(used => sameThing(used, value)));
+  const alreadyUsed = item => isUsed([item.answer, ...(item.aliases || [])]);
   function trackAcceptedAnswers() {
     if (!game || lifecycle?.stage !== 'round') return;
     const answers = [];
@@ -137,7 +171,7 @@
       if (!bubble.matches('.ok, .rest') || !text || text.length > 120) continue;
       const key = answerKey(text);
       if (!key || usedInRoom.has(key)) continue;
-      usedInRoom.add(key); answers.push(text);
+      markUsed(text); answers.push(text);
     }
     if (!answers.length) return;
     const scope = game;
@@ -160,7 +194,7 @@
       lifecycle = {id:'server:' + liveRoom.game, stage:liveRoom.phase, category:0};
       if (next === game) return false;
       if (game) for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
-      game = next; usedInRoom.clear(); lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren(); return true;
+      game = next; usedInRoom.clear(); usedText.clear(); lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren(); return true;
     }
     const gameRoot = document.querySelector('.pf-root');
     if (!gameRoot || gameRoot.hasAttribute('data-loading')) return false;
@@ -187,7 +221,7 @@
       // Ignore lingering bubbles from the preceding game until they change.
       for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
     }
-    usedInRoom.clear(); clearTimeout(replacementTimer);
+    usedInRoom.clear(); usedText.clear(); clearTimeout(replacementTimer);
     game = next; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren();
     return true;
   }
@@ -253,15 +287,21 @@
     $('#status').textContent = replace ? 'Finding obscure answers…' : 'Filling the empty slot…';
     const avoid = (replace ? (skipShown ? cards() : []) : keep).flatMap(button => button.answerTexts);
     let result;
-    try { result = await send({type: 'suggest', game, prompt, want: need, topUp: !replace, excluded: [...avoid, ...usedInRoom]}); }
+    try { result = await send({type: 'suggest', game, prompt, want: need, topUp: !replace, excluded: [...avoid, ...usedInRoom, ...usedText]}); }
     catch { result = {error: 'Could not load suggestions. Click Retry.'}; }
     if (version !== generation) return;
     busy = false;
     if (result?.error || !Array.isArray(result?.answers)) {
       failure = true; $('#status').textContent = result?.error || 'No response. Retry.'; updateButtons(); return;
     }
-    const onScreen = new Set((replace ? [] : cards()).flatMap(button => button.answerKeys));
-    const available = result.answers.filter(item => !alreadyUsed(item) && ![item.answer, ...(item.aliases || [])].some(value => onScreen.has(answerKey(value))));
+    // Skip anything used, or another form of an answer already on screen or earlier in this batch.
+    const onScreen = (replace ? [] : cards()).flatMap(button => button.answerTexts);
+    const available = [];
+    for (const item of result.answers) {
+      const texts = [item.answer, ...(item.aliases || [])];
+      if (alreadyUsed(item) || texts.some(text => onScreen.some(shown => sameThing(shown, text)))) continue;
+      available.push(item); onScreen.push(...texts);
+    }
     if (replace) $('#choices').replaceChildren();
     for (const item of available.slice(0, Math.max(0, 3 - cards().length))) $('#choices').append(makeCard(item));
     renumber();
@@ -311,17 +351,21 @@
   // it, wait for the game's verdict: it ignores Enter when it isn't your turn, and the feed
   // reports both accepted and rejected answers.
   const rememberInput = () => {
-    if (feedLive()) return;
+    if (feedLive()) {
+      const said = gameInput()?.value?.trim();
+      if (said && said.length <= 120) pendingSubmit = {text: said, at: Date.now(), game, fromBank: cards().some(button => button.answerTexts.some(text => sameThing(text, said)))};
+      return;
+    }
     const input = gameInput(), answer = input?.value?.trim();
     if (!answer || !game || answer === lastSubmit) return;
     lastSubmit = answer;
     const scope = game, saved = send({type: 'remember', game, answers: [answer]});
     // Submitting a bank answer removes just that card and fills its slot. A typed answer
     // that isn't in the bank leaves the bank alone.
-    const key = answerKey(answer);
-    const card = cards().find(button => button.answerKeys.includes(key));
+    markUsed(answer);
+    const card = cards().find(button => button.answerTexts.some(text => sameThing(text, answer)));
     if (!card) return;
-    usedInRoom.add(key); card.remove(); renumber();
+    card.remove(); renumber();
     saved.then(() => { if (game === scope) refill(); });
   };
   document.addEventListener('keydown', event => { if (event.key === 'Enter' && event.target === gameInput()) rememberInput(); }, true);

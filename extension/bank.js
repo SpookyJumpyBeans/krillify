@@ -46,7 +46,7 @@ function fold(list, item) {
 }
 
 const seenItems = record => Object.values(record?.answers || {}).filter(seen => typeof seen?.answer === 'string')
-  .map(seen => ({answer: seen.answer, aliases: [], note: '', tier: cleanTier(seen.tier) || 'accepted'}));
+  .map(seen => ({answer: seen.answer, aliases: Array.isArray(seen.aliases) ? seen.aliases.filter(alias => typeof alias === 'string') : [], note: '', tier: cleanTier(seen.tier) || 'accepted'}));
 
 // One ranked candidate list from several sources (earlier sources win ties), with tiers from
 // answers seen accepted in real games applied on top.

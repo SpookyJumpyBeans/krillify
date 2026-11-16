@@ -4,7 +4,7 @@
   const channel = 'krillify-game-v1';
   const socketType = window.WebSocket;
   const streamType = window.EventSource;
-  let owner = null, state = null, identity = '', used = new Map(), rejects = new Map(), titles = new Map();
+  let owner = null, state = null, identity = '', used = new Map(), rejects = new Map(), titles = new Map(), me = null;
   const publish = () => window.postMessage({channel, room: {
     game: identity, phase: state.phase, prompt: state.category?.text || '',
     category: state.category?.index || 0, answers: [...used.values()].slice(-2500), rejects: [...rejects.values()].slice(-500)
@@ -21,6 +21,14 @@
     if (!state || !Array.isArray(state.events)) return;
     const next = code + ':' + (state.gameId || state.gameNumber || 0);
     if (next !== identity) { identity = next; used.clear(); rejects.clear(); titles.clear(); }
+    // The game broadcasts each player's typing preview (first 40 characters). Whoever's preview
+    // matches this tab's answer box is this player, so their accepted answers can be marked
+    // "mine". Player ids stay inside this script; only the yes/no flag is forwarded.
+    try {
+      const typed = document.querySelector('.pf-root input.ds-input')?.value?.trim().toLowerCase().slice(0, 40);
+      const matches = typed && typed.length >= 3 && Array.isArray(state.players) ? state.players.filter(p => typeof p?.typing === 'string' && p.typing.trim().toLowerCase().slice(0, 40) === typed) : [];
+      if (matches.length === 1 && matches[0].id != null) me = matches[0].id;
+    } catch {}
     // Category events carry only an index, so remember each index's text while it's on screen.
     const shown = state.category;
     if (Number.isInteger(shown?.index) && typeof shown.text === 'string' && shown.text.trim()) titles.set(shown.index, shown.text.trim().slice(0, 500));
@@ -34,7 +42,7 @@
       const prompt = index === null ? '' : titles.get(index) || '';
       if (event.kind === 'pass' && typeof event.answer === 'string' && event.answer.length <= 120) {
         const key = event.answer.toLowerCase();
-        used.set(key, {answer:event.answer, tier:typeof event.tier === 'string' ? event.tier : '', prompt: used.get(key)?.prompt || prompt});
+        used.set(key, {answer:event.answer, tier:typeof event.tier === 'string' ? event.tier : '', prompt: used.get(key)?.prompt || prompt, mine: !!used.get(key)?.mine || (me !== null && event.from === me)});
       }
       // why "miss": not on the game's answer list. why "repeat": already said this game.
       if (event.kind === 'reject' && typeof event.text === 'string' && event.text.length <= 120 && typeof event.why === 'string') {
@@ -46,7 +54,7 @@
   }
   function attach(socket, code, eventName, snapshot) {
     const token = {};
-    owner = token; state = null; identity = ''; used = new Map(); rejects = new Map(); titles = new Map();
+    owner = token; state = null; identity = ''; used = new Map(); rejects = new Map(); titles = new Map(); me = null;
     socket.addEventListener(eventName, event => {
       try { ingest(JSON.parse(String(event.data)), token, code, snapshot); } catch {}
     });

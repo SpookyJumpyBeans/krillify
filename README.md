@@ -1,7 +1,7 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.4.0" src="https://img.shields.io/badge/version-1.4.0-9ce8cb?style=flat-square&labelColor=102438">
+  <img alt="Version 1.4.2" src="https://img.shields.io/badge/version-1.4.2-9ce8cb?style=flat-square&labelColor=102438">
   <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%2F%20Edge-4de3ff?style=flat-square&labelColor=102438">
   <img alt="Manifest V3" src="https://img.shields.io/badge/extension-Manifest%20V3-ffd166?style=flat-square&labelColor=102438">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=flat-square&labelColor=102438">
@@ -75,7 +75,9 @@ Structured tracking can recover earlier accepted answers included in the server 
 
 **Verified answers.** Every accepted answer in the game feed is saved with the rarity tier the game gave it (`krillion`, `deepcut`, `rare`, `schooler`, `plankton`, and so on). The feed marks each category change, so each answer is matched to its exact category. Answers from a category that ended before you joined are skipped, because their text was never on screen. Saved tiers rank your suggestions straight away: verified rare answers move to the top, verified common ones to the bottom, and unverified answers keep their order.
 
-**Rejected answers.** When the game rejects an answer as not on its list ("no echo"), Krillify marks it `miss` for that prompt and never suggests it again, and the AI is told to avoid it too. Answers rejected only because someone already said them are just skipped for that game. A rejection only applies to an answer already in your cache or the bank, so other players' typos never become entries, and a later acceptance always overrides it. Matching ignores case, spaces, punctuation and accents, but not typos.
+**Rejected answers.** When the game rejects an answer as not on its list ("no echo"), Krillify marks it `miss` for that prompt and never suggests it again, and the AI is told to avoid it too. Answers rejected only because someone already said them are just skipped for that game. A rejection only applies to an answer already in your cache or the bank, so other players' typos never become entries, and a later acceptance always overrides it. Matching ignores case, spaces, punctuation and accents, but not typos. Krillion often accepts a short form of a longer answer and reports that, so two answers also match when one equals the first whole words of the other: "Hiball" clears a "Hiball Energy" card, and the two are never offered together. "Cat" matches "Cat shark" but never "Catfish".
+
+**Other names.** Krillion can accept an answer under a completely different name ("Korean steamed eggs" for "Gyeran-jjim"). The game broadcasts each player's typing preview, so Krillify can tell which accepted answers are yours. When your accepted answer arrives under another name, the card you submitted is cleared too, and if it was a suggestion the game's name is saved as its alias, so the bank learns the two are the same answer. Tiers and verified names always come from what the game reports, never from what you typed. Answers you type yourself are cleared but never saved as aliases, so typos stay out of the bank.
 
 **Random picks.** Suggestions are drawn at random from the six rarest unused answers rather than always the top three, so players sharing the bank spread across more answers.
 
@@ -139,6 +141,7 @@ node --check extension/core.js
 node --check extension/bank.js
 node --check extension/options.js
 node tests/game-events.cjs
+node tests/matching.cjs
 node tests/worker-v120.cjs
 node tests/worker-refill.cjs
 node tests/worker-bank.cjs

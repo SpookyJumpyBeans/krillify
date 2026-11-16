@@ -29,7 +29,14 @@ async function recordSeen(message) {
     // A verified acceptance is never overwritten by a later rejection of the same answer.
     let tier = cleanTier(value.tier) || previous?.tier || '';
     if (tier === 'miss' && previous?.tier && previous.tier !== 'miss') tier = previous.tier;
-    record.answers[id] = {answer: previous?.answer || answer, tier, n: (previous?.n || 0) + 1};
+    // Other names the game accepted this answer under (what you submitted from a card).
+    const aliases = [...(previous?.aliases || [])];
+    const known = new Set([id, ...aliases.map(normalize)]);
+    for (const alias of Array.isArray(value.aliases) ? value.aliases : []) {
+      const text = typeof alias === 'string' ? alias.trim().slice(0, 120) : '';
+      if (text && !known.has(normalize(text)) && aliases.length < 8) { aliases.push(text); known.add(normalize(text)); }
+    }
+    record.answers[id] = {answer: previous?.answer || answer, tier, n: (previous?.n || 0) + 1, ...(aliases.length ? {aliases} : {})};
   }
   record.answers = Object.fromEntries(Object.entries(record.answers).slice(-200));
   record.updated = Date.now(); verified[key] = record;

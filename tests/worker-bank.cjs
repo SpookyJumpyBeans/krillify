@@ -74,6 +74,14 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  assert(!result.answers.some(x=>x.answer==='Wels'),'rejected answers are not suggested');
  delete data.verified['q:nameafish'].answers.wels;
 
+ // Alias learning: the game accepted the "Gyeran-jjim" card as "Korean steamed eggs".
+ await send({type:'record',prompt:'Name an egg dish',answers:[{answer:'Korean steamed eggs',tier:'deepcut',aliases:['Gyeran-jjim','',42]}]});
+ await send({type:'record',prompt:'Name an egg dish',answers:[{answer:'korean steamed eggs',tier:'',aliases:['gyeran jjim']}]});
+ assert.deepEqual(data.verified['q:nameaneggdish'].answers.koreansteamedeggs,{answer:'Korean steamed eggs',tier:'deepcut',n:2,aliases:['Gyeran-jjim']},'aliases are stored once, junk dropped');
+ const eggs=mergeBank({'Name an egg dish':['Oeufs en meurette',{answer:'Gyeran-jjim',note:'Korean steamed egg custard'}]},{},{'q:nameaneggdish':data.verified['q:nameaneggdish']}).bank['Name an egg dish'];
+ assert.deepEqual(eggs,[{answer:'Gyeran-jjim',aliases:['Korean steamed eggs'],note:'Korean steamed egg custard',tier:'deepcut'},{answer:'Oeufs en meurette',aliases:[],note:''}],'the bank entry learns the alias and the tier, with no duplicate entry');
+ delete data.verified['q:nameaneggdish'];
+
  assert.equal((await send({type:'sync'})).skipped,'Maintainer mode is off.');assert.equal(gh.calls.length,0);
  assert.match((await send({type:'sync',force:true})).error,/Unrecognized sender/);
 
@@ -99,5 +107,5 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 
  gh.file=null;data.maintainer.token='bad';
  result=await send({type:'sync',force:true},page);assert(result.error);assert.equal(data.syncState.failed,true);
- console.log('PASS random picks within the rarest six, tier ranking, rejected answers, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, noreply author, commit, no-op, update with sha, rate limit, sender checks, no commit without an identity, failure state)');
+ console.log('PASS random picks within the rarest six, tier ranking, rejected answers, learned aliases, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, noreply author, commit, no-op, update with sha, rate limit, sender checks, no commit without an identity, failure state)');
 })().catch(e=>{console.error(e);process.exitCode=1});

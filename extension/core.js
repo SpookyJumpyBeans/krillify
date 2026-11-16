@@ -1,4 +1,26 @@
 export const normalize = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+// content.js keeps a copy of answerWords and sameThing (content scripts can't import modules);
+// change both together.
+const articles = new Set(['the', 'a', 'an']);
+export function answerWords(value) {
+  const words = String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  while (words.length > 1 && articles.has(words[0])) words.shift();
+  return words;
+}
+// Krillion often accepts and reports a short form of a longer answer ("Hiball" for "Hiball
+// Energy"), so two answers count as the same when one, spaces ignored, equals the first whole
+// words of the other. "Cat" matches "Cat shark" but never "Catfish".
+const leads = (short, long) => {
+  const target = short.join('');
+  if (target.length < 3) return false;
+  let joined = '';
+  for (const word of long) { joined += word; if (joined === target) return true; if (joined.length >= target.length) return false; }
+  return false;
+};
+export function sameThing(a, b) {
+  const x = Array.isArray(a) ? a : answerWords(a), y = Array.isArray(b) ? b : answerWords(b);
+  return leads(x, y) || leads(y, x);
+}
 // Original starter lists, ordered by estimated obscurity; not official acceptance/rarity data.
 export const starterBanks = {
   nameaninsect:['Zorapteran','Grylloblattid','Strepsipteran','Webspinner','Snakefly','Alderfly','Dobsonfly','Scorpionfly','Twisted-wing parasite','Bristletail','Thrips','Lacewing'],
@@ -31,12 +53,16 @@ export function cleanCandidates(values) {
 // give the same ones. The picks keep their bank order, rarest first.
 export function takeThree(pool, history, excluded = [], limit = 3, random = Math.random) {
   const blocked = new Set([...history, ...excluded].map(normalize));
+  // Word lists for short-form matching, so a used "Hiball" also blocks "Hiball Energy" and two
+  // forms of one answer are never offered side by side.
+  const blockedWords = [...new Set([...history, ...excluded].map(String))].map(answerWords).filter(words => words.length);
   const open = [];
   for (const item of cleanCandidates(pool)) {
-    const keys = [item.answer, ...item.aliases].map(normalize);
-    if (item.tier === 'miss' || keys.some(key => blocked.has(key))) continue;
+    const texts = [item.answer, ...item.aliases], keys = texts.map(normalize), words = texts.map(answerWords);
+    if (item.tier === 'miss' || keys.some(key => blocked.has(key)) || words.some(w => blockedWords.some(b => sameThing(w, b)))) continue;
     open.push(item);
     keys.forEach(key => blocked.add(key));
+    blockedWords.push(...words.filter(w => w.length));
     if (open.length >= Math.max(6, limit * 2)) break;
   }
   // Partial Fisher-Yates shuffle of the indexes: always ends, never repeats a pick.
