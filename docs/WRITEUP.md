@@ -4,7 +4,7 @@
 
 Puffer Party is a category game played under time pressure. Switching to a chat window, copying a question, and returning to the game takes too long. Krillify moves that interaction into the browser: read the visible category, find obscure candidates, and show three beside the game input.
 
-Version 1.1.1 is preserved here as a small, inspectable implementation. The published branding changes the displayed name to Krillify; it does not import behavior from later experimental versions.
+Version 1.1.1 is the base for this small, inspectable implementation. Published branding changes the displayed name to Krillify. Accepted opponent-answer tracking was added separately, without importing the later experimental prompt or messaging changes.
 
 ## Three parts, one local profile
 
@@ -26,7 +26,11 @@ The answer bank and the current game’s used list serve different purposes. Cac
 
 Krillify assigns each game a local scope derived from the room path and a random identifier. It watches the game’s lobby, countdown, game-over label and category counter to detect a new game. Same-tab session storage preserves the identifier through a refresh. Used-answer records remain scoped to that identifier, while the candidate cache is shared across games.
 
-Viewing or filling an answer does not exclude it. Enter, form submission, and the game’s Send answer button record submission attempts, including rejected attempts. Known aliases are expanded from cached candidates. Names are normalized for case, punctuation and accents. Other players’ submissions and unknown aliases remain outside this tracker’s coverage.
+Viewing or filling an answer does not exclude it. Enter, form submission, and the game’s Send answer button record your submission attempts, including rejected attempts. Known aliases are expanded from cached candidates. Names are normalized for case, punctuation and accents.
+
+Opponent tracking uses a MutationObserver over the rendered game. The inspected renderer marks accepted pass bubbles with `pf-say ok` and restored accepted answers with `pf-say rest`, inside a player’s `pf-seat`. Only those signals enter the used list. Typing previews, rejected guesses and ordinary chat are ignored. No game traffic is intercepted.
+
+New accepted answers immediately remove matching choices from the overlay. A debounced replacement request reuses the existing cache and history path. An in-memory exclusion set also filters replies from requests already in flight. Bubble fingerprints avoid duplicate tracking when a pass animation becomes a resting label. On a new game, the set is cleared and lingering old bubbles are suppressed until they change. Earlier accepted answers no longer rendered when the helper starts remain unobservable.
 
 ## Keeping costs and latency down
 
@@ -46,6 +50,6 @@ The extension deliberately keeps submission manual. Clicking a recommendation fi
 
 ## Validation for this publication
 
-The four JavaScript files were syntax-checked, manifest references were checked against the packaged files, and the runtime sources were compared with the restored v1.1.1 baseline, allowing only displayed branding changes. No API key, browser profile, generated cache, room history or local debugging archive is included in the repository.
+The four JavaScript files were syntax-checked and manifest references were checked against the packaged files. The original publication matched the restored v1.1.1 baseline apart from displayed branding. The subsequent opponent-tracking change was tested in a browser fixture using the actual worker selection/history logic: accepted aliases remove suggestions and trigger cached replacements, chat/typing/rejections are ignored, repeated resting bubbles do not create new requests, answers arriving during generation are filtered, and the next game can reuse previous opponent answers. No API key, browser profile, generated cache, room history or local debugging archive is included in the repository.
 
 This publication does not claim that later-version browser tests validate every v1.1.1 behavior. A live match was not run as part of preparing this repository.

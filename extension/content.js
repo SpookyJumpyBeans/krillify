@@ -11,6 +11,41 @@
   let current = '', generation = 0, busy = false, enabled = false, picking = false, custom = null;
   let lastStatus = 0, failure = false, lastSubmit = '';
   let game = '', lifecycle = null, roomPath = '', shown = [];
+  const usedInRoom = new Set();
+  const bubbleVersions = new WeakMap();
+  let replacementTimer;
+  const answerKey = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const alreadyUsed = item => [item.answer, ...(item.aliases || [])].some(value => usedInRoom.has(answerKey(value)));
+  function trackAcceptedAnswers() {
+    if (!game || lifecycle?.stage !== 'round') return;
+    const answers = [];
+    for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) {
+      const text = bubble.textContent.trim();
+      const stamp = bubble.className + ':' + text;
+      if (bubbleVersions.get(bubble) === stamp) continue;
+      bubbleVersions.set(bubble, stamp);
+      // Accepted pass bubbles are "ok"; restored accepted answers are "rest".
+      if (!bubble.matches('.ok, .rest') || !text || text.length > 120) continue;
+      const key = answerKey(text);
+      if (!key || usedInRoom.has(key)) continue;
+      usedInRoom.add(key); answers.push(text);
+    }
+    if (!answers.length) return;
+    const scope = game;
+    let removed = false;
+    for (const button of $('#choices').querySelectorAll('.pick')) {
+      if (button.answerKeys?.some(key => usedInRoom.has(key))) { button.remove(); removed = true; }
+    }
+    const saved = send({type:'remember', game:scope, answers});
+    if (removed) {
+      $('#status').textContent = 'An answer was used in this game — replacing it…';
+      clearTimeout(replacementTimer);
+      replacementTimer = setTimeout(async () => {
+        await saved;
+        if (game === scope && current && enabled && !busy) suggest();
+      }, 150);
+    }
+  }
   function syncGame() {
     const room = location.pathname;
     if (!/^\/party\/[^/]+/.test(room)) return false;
@@ -35,6 +70,11 @@
     try { sessionStorage.setItem('puffer-helper:' + room, JSON.stringify(lifecycle)); } catch {}
     const next = room + ':' + lifecycle.id;
     if (next === game) return false;
+    if (game) {
+      // Ignore lingering bubbles from the preceding game until they change.
+      for (const bubble of document.querySelectorAll('.pf-root .pf-seat .pf-say')) bubbleVersions.set(bubble, bubble.className + ':' + bubble.textContent.trim());
+    }
+    usedInRoom.clear(); clearTimeout(replacementTimer);
     game = next; shown = []; lastSubmit = ''; ++generation; busy = false; current = ''; $('#choices').replaceChildren();
     return true;
   }
@@ -67,20 +107,23 @@
     busy = true; failure = false; updateButtons(); $('#choices').replaceChildren();
     $('#status').textContent = 'Finding obscure answers…';
     let result;
-    try { result = await send({type: 'suggest', game, prompt, excluded}); }
+    try { result = await send({type: 'suggest', game, prompt, excluded: [...excluded, ...usedInRoom]}); }
     catch { result = {error: 'Could not load suggestions. Click Retry.'}; }
     if (version !== generation) return;
     busy = false;
     if (result?.error || !Array.isArray(result?.answers)) {
       failure = true; $('#status').textContent = result?.error || 'No response. Retry.'; updateButtons(); return;
     }
-    shown = result.answers.map(item => item.answer);
-    for (const [index, item] of result.answers.entries()) {
+    const available = result.answers.filter(item => !alreadyUsed(item));
+    shown = available.map(item => item.answer);
+    for (const [index, item] of available.entries()) {
       const button = document.createElement('button'); button.className = 'pick';
+      button.answerKeys = [item.answer, ...(item.aliases || [])].map(answerKey);
       const title = document.createElement('b'); title.textContent = `${index + 1}. ${item.answer}`;
       const note = document.createElement('small'); note.textContent = item.note;
       button.append(title, note);
       button.addEventListener('click', () => {
+        if (alreadyUsed(item)) { button.remove(); $('#status').textContent = 'That answer was already used. Choose another.'; return; }
         const input = gameInput();
         if (!input) { $('#status').textContent = 'Answer box isn’t available yet. Wait for your turn.'; return; }
         const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
@@ -89,11 +132,17 @@
       });
       $('#choices').append(button);
     }
-    $('#status').textContent = `${result.source === 'AI estimate' ? 'AI estimate' : result.source === 'imported bank' ? 'Answer bank' : 'Cached suggestions'} · ${result.answers.length} unused option${result.answers.length === 1 ? '' : 's'}`;
+    $('#status').textContent = `${result.source === 'AI estimate' ? 'AI estimate' : result.source === 'imported bank' ? 'Answer bank' : 'Cached suggestions'} · ${available.length} unused option${available.length === 1 ? '' : 's'}`;
     updateButtons();
+    if (available.length < result.answers.length) {
+      // A pass can arrive during generation; discard it even if the reply is stale.
+      clearTimeout(replacementTimer);
+      replacementTimer = setTimeout(() => { if (!busy && current === prompt) suggest(); }, 150);
+    }
   }
   async function scan() {
     syncGame();
+    trackAcceptedAnswers();
     if (Date.now() - lastStatus > 2500) {
       lastStatus = Date.now();
       const status = await send({type: 'status', game});
@@ -145,5 +194,14 @@
     $('header').addEventListener('pointermove', move); $('header').addEventListener('pointerup', stop); $('header').addEventListener('pointercancel', stop);
   });
   // Polling avoids rerunning on the game's continuously animated DOM; 200 ms detection delay.
+  const answersObserver = new MutationObserver(records => {
+    if (records.some(record => {
+      const target = record.target instanceof Element ? record.target : record.target.parentElement;
+      return target && (target.closest('.pf-say') || [...record.addedNodes].some(node => node instanceof Element && (node.matches('.pf-say, .pf-seat') || node.querySelector('.pf-say'))));
+    })) {
+      syncGame(); trackAcceptedAnswers();
+    }
+  });
+  answersObserver.observe(document.documentElement, {subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
   setInterval(scan, 200); scan();
 })();

@@ -28,7 +28,7 @@ The game’s curated answer list is authoritative. Obscure or correct real-world
 
 ## Answers repeat
 
-Unused suggestions may repeat. Only submitted answers and known aliases are excluded for the current game. A new game intentionally allows previous answers again. Another tab has a separate tracker, and other players’ answers are not automatically excluded.
+Unused suggestions may repeat. Your submitted answers, observed accepted opponent answers, and known aliases are excluded for the current game. A new game intentionally allows previous answers again. Another tab has a separate tracker. If an opponent answer was used before the helper started and its bubble is no longer rendered, it cannot be tracked retroactively. Changes to the game’s bubble markup can also interrupt tracking.
 
 ## Updating
 

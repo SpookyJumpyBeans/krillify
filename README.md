@@ -15,7 +15,7 @@ Krillify is an unofficial Chrome/Edge companion for [Krillion’s Puffer Party](
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
-> This repository preserves the **v1.1.1 implementation**, with Krillify branding. Rarity is estimated, acceptance is not guaranteed, and this version has known intermittent prompt-detection and background-message timeout issues.
+> This repository uses the **v1.1.1 implementation**, with Krillify branding and accepted opponent-answer tracking added. Rarity is estimated, acceptance is not guaranteed, and this version has known intermittent prompt-detection and background-message timeout issues.
 
 ## What it does
 
@@ -25,6 +25,7 @@ Click a suggestion to fill the answer box, then submit it yourself. Krillify tra
 | Three suggestions | Shows up to three obscure, unused answers, with the best estimated pick first |
 | Click to fill | Inserts an answer into the game box; you still press Enter |
 | Game-scoped memory | Excludes submitted answers and known aliases during the current game |
+| Opponent tracking | Watches accepted answer bubbles, removes used suggestions, and fills the gaps |
 | Local cache | Keeps answer lists across games and browser restarts |
 | Answer bank imports | Supports your own JSON lists without an API key |
 | On-page panel | Drag it, minimize it, or pick the prompt manually |
@@ -57,7 +58,9 @@ No build step, package install, or server is needed.
 - **Refreshes in the same tab** retain the game identity. A different tab has a separate tracker.
 - **Pick prompt** lets you click the category text if automatic detection misses it.
 
-Other players’ answers are not tracked. If someone has already used a suggestion, choose another or request the next batch. Known aliases are matched; unknown alternate names can still slip through.
+**Opponents’ accepted answers are tracked automatically.** Krillify watches the game’s accepted-answer bubbles, adds them to the same game-scoped exclusion list, removes matching visible suggestions (including known aliases), and requests replacements. It also checks answers that arrive while a suggestion request is running. Typing previews, rejected guesses and chat do not count as opponent answers.
+
+Tracking covers accepted answers rendered while the helper is running, including the last accepted answers still displayed when you join. It cannot recover earlier answers no longer present on screen, and it depends on the game’s answer-bubble markup. Known aliases are matched; unknown alternate names can still slip through.
 
 ## Bring your own answers
 
