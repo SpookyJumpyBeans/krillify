@@ -3,9 +3,54 @@
   const host = document.createElement('div'); host.id = 'puffer-helper-host';
   host.style.cssText = 'position:fixed;right:16px;top:90px;z-index:2147483646;max-width:calc(100vw - 24px)';
   const root = host.attachShadow({mode: 'open'});
+  // Styled after Puffer Party: VT323 (already loaded by the page), square double-ring
+  // panels, wide-tracked uppercase labels and a cyan ring for the active item.
   root.innerHTML = `<style>
-    :host{color-scheme:dark}*{box-sizing:border-box}section{width:310px;max-width:calc(100vw - 24px);font:13px/1.45 system-ui,sans-serif;color:#e9f3ff;background:#0c1828f5;border:1px solid #36657e;border-radius:16px;box-shadow:0 12px 40px #0008;overflow:hidden}header{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#14283c;cursor:move;touch-action:none}header strong{flex:1;color:#a4f5dc}button{font:inherit;cursor:pointer;border:1px solid #3b5974;background:#1d334a;color:#e9f3ff;border-radius:8px;padding:6px 9px}button:hover{background:#2b4966}button:disabled{opacity:.5;cursor:default}main{padding:12px 14px}#prompt{font-weight:650;margin:0 0 10px;overflow-wrap:anywhere}#status{color:#a4b9ce;font-size:12px;margin:8px 0}.pick{display:block;width:100%;text-align:left;margin:8px 0;padding:10px 12px;background:#122c37;border-color:#326458}.pick b{display:block;color:#bbffe2;font-size:15px}.pick small{display:block;color:#a7bdcb;margin-top:3px}.pick.used{opacity:.5}footer{display:flex;gap:7px;margin-top:10px}.fine{font-size:11px;color:#8ca7be;margin:10px 0 0}#min{padding:2px 8px}section.fold main{display:none}#next{flex:1}
-    </style><section><header><strong>Krillify</strong><button id="min" aria-label="Minimize">−</button></header><main><p id="prompt">Waiting for a Puffer Party prompt…</p><div id="choices"></div><p id="status">Checking settings…</p><footer><button id="next">Next 3</button><button id="pick">Pick prompt</button><button id="settings">Settings</button></footer><p class="fine">Click an answer to fill the game box. You submit it.<br>Rarity is estimated; acceptance isn’t guaranteed.</p></main></section>`;
+    :host{color-scheme:dark;--ink:#e8f1ff;--drift:#7d93b8;--dim:#5d739c;--abyss:#060d1a;--rim:#1b3050;--cyan:#4de3ff;--key:rgba(11,21,38,.9);--hair:#7d93b838;--warn:#ff9f43}
+    *{box-sizing:border-box;margin:0}
+    section{width:300px;max-width:calc(100vw - 24px);font:18px/1.15 VT323,"VT323 Fallback",ui-monospace,monospace;color:var(--ink);background:rgba(8,15,28,.9);backdrop-filter:blur(6px);box-shadow:0 0 0 2px var(--abyss),0 0 0 4px var(--rim),0 0 40px rgba(0,0,0,.45);-webkit-font-smoothing:none}
+    header{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;cursor:move;touch-action:none;user-select:none}
+    h2{font:inherit;font-size:16px;letter-spacing:3.3px;color:var(--ink)}
+    h2 span{color:var(--cyan);text-shadow:0 0 10px rgba(77,227,255,.5)}
+    .rule{flex:1;height:0;border-top:2px dashed var(--hair)}
+    button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+    button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+    #min{width:26px;height:22px;font-size:18px;line-height:20px;color:var(--drift);background:var(--key);box-shadow:0 0 0 2px var(--abyss),0 0 0 3px var(--rim)}
+    #min:hover{color:var(--ink)}
+    main{padding:2px 14px 14px}
+    section.fold main{display:none}
+    section.fold header{padding-bottom:12px}
+    .label{display:block;font-size:12px;letter-spacing:2.9px;color:var(--drift);text-transform:uppercase;margin-bottom:4px}
+    #prompt{font-size:22px;line-height:1.05;letter-spacing:.5px;overflow-wrap:anywhere;margin-bottom:14px}
+    #prompt.idle{font-size:18px;color:var(--dim)}
+    #choices{display:grid;gap:10px;padding:4px}
+    .pick,.slot{display:flex;align-items:flex-start;gap:10px;width:100%;min-height:52px;text-align:left;padding:8px 10px 7px;background:var(--key);box-shadow:0 0 0 2px var(--abyss),0 0 0 4px var(--rim);transition:box-shadow .12s}
+    .pick:hover,.pick:focus-visible{outline:0;box-shadow:0 0 0 2px var(--abyss),0 0 0 4px var(--cyan),0 0 16px rgba(77,227,255,.35)}
+    .pick:active{transform:translateY(1px)}
+    .pick.filled{box-shadow:0 0 0 2px var(--abyss),0 0 0 4px var(--cyan),0 0 16px rgba(77,227,255,.35)}
+    .num{flex:none;width:22px;height:22px;display:grid;place-items:center;font-size:16px;color:var(--abyss);background:var(--cyan);margin-top:1px}
+    .body{min-width:0}
+    .pick b{display:block;font-weight:400;font-size:21px;line-height:1;letter-spacing:.6px;overflow-wrap:anywhere}
+    .pick small{display:block;font-size:14px;line-height:1.1;color:var(--dim);margin-top:3px;letter-spacing:.3px}
+    .slot{align-items:center;justify-content:center;font-size:14px;letter-spacing:2.9px;color:var(--dim);text-transform:uppercase;background:transparent;box-shadow:inset 0 0 0 2px var(--hair)}
+    section.busy .slot{animation:pulse 1.1s steps(2) infinite}
+    @keyframes pulse{50%{color:var(--cyan)}}
+    #status{display:flex;align-items:center;gap:8px;min-height:18px;font-size:14px;letter-spacing:.5px;color:var(--drift);margin:14px 0 12px}
+    #status::before{content:"";flex:none;width:6px;height:6px;background:var(--dim)}
+    section.busy #status::before{background:var(--cyan);animation:blink .6s steps(2) infinite}
+    section.failed #status{color:var(--warn)}
+    section.failed #status::before{background:var(--warn)}
+    @keyframes blink{50%{opacity:0}}
+    footer{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
+    footer button{padding:7px 4px 5px;font-size:15px;letter-spacing:1.4px;text-transform:uppercase;color:var(--drift);background:rgba(11,21,38,.85);border:1px solid var(--rim)}
+    footer button:hover:not(:disabled){color:var(--ink);border-color:var(--drift)}
+    #next{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 12px rgba(77,227,255,.2)}
+    #next:hover:not(:disabled){color:var(--ink);background:rgba(77,227,255,.12)}
+    footer button:disabled{opacity:.4;cursor:default;box-shadow:none}
+    #pick.on{color:var(--cyan);border-color:var(--cyan)}
+    .fine{font-size:13px;line-height:1.2;color:var(--dim);margin-top:12px;padding-top:10px;border-top:2px dashed var(--hair)}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+    </style><section><header><h2>KRILL<span>IFY</span></h2><div class="rule"></div><button id="min" aria-label="Minimize" title="Minimize">−</button></header><main><span class="label">Category</span><p id="prompt" class="idle">Waiting for a Puffer Party prompt…</p><span class="label">Deep cuts</span><div id="choices" aria-live="polite"></div><p id="status" role="status">Checking settings…</p><footer><button id="next">Next 3</button><button id="pick" title="Click the prompt text on the page">Pick</button><button id="settings">Settings</button></footer><p class="fine">Click an answer to fill the game box, then press Enter. Rarity is estimated; acceptance isn’t guaranteed.</p></main></section>`;
   document.documentElement.append(host);
   const $ = selector => root.querySelector(selector);
   let current = '', generation = 0, busy = false, enabled = false, picking = false, custom = null;
@@ -33,7 +78,16 @@
   const answerKey = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   window.postMessage({channel:'krillify-request-state'}, location.origin);
   const cards = () => [...$('#choices').querySelectorAll('.pick')];
-  const renumber = () => cards().forEach((button, index) => { button.querySelector('b').textContent = `${index + 1}. ${button.answer}`; });
+  function renumber() {
+    cards().forEach((button, index) => { button.querySelector('.num').textContent = index + 1; });
+    for (const slot of $('#choices').querySelectorAll('.slot')) slot.remove();
+    if (!current || !enabled) return;
+    for (let i = cards().length; i < 3; i++) {
+      const slot = document.createElement('div'); slot.className = 'slot';
+      slot.textContent = busy ? 'Diving…' : 'Empty';
+      $('#choices').append(slot);
+    }
+  }
   // Remove only the cards that were used; the rest stay where they are.
   function dropUsed() {
     let removed = false;
@@ -132,21 +186,28 @@
     return [...document.querySelectorAll('.pf-root input.ds-input, .pf-root input[type="text"]')]
       .find(el => visible(el) && !el.disabled && !/chat|name|code/i.test([el.placeholder, el.getAttribute('aria-label')].join(' ')));
   }
-  function updateButtons() { $('#next').disabled = !current || busy || !enabled; $('#next').textContent = failure ? 'Retry' : 'Next 3'; }
+  function updateButtons() {
+    $('#next').disabled = !current || busy || !enabled; $('#next').textContent = failure ? 'Retry' : 'Next 3';
+    $('section').classList.toggle('busy', busy); $('section').classList.toggle('failed', failure);
+    renumber();
+  }
   function makeCard(item) {
     const button = document.createElement('button'); button.className = 'pick';
     button.answer = item.answer;
     button.answerTexts = [item.answer, ...(item.aliases || [])];
     button.answerKeys = button.answerTexts.map(answerKey);
-    const title = document.createElement('b');
+    const num = document.createElement('span'); num.className = 'num';
+    const body = document.createElement('span'); body.className = 'body';
+    const title = document.createElement('b'); title.textContent = item.answer;
     const note = document.createElement('small'); note.textContent = item.note;
-    button.append(title, note);
+    body.append(title, note); button.append(num, body);
     button.addEventListener('click', () => {
       if (alreadyUsed(item)) { button.remove(); renumber(); $('#status').textContent = 'That answer was already used. Choose another.'; refill(); return; }
       const input = gameInput();
       if (!input) { $('#status').textContent = 'Answer box isn’t available yet. Wait for your turn.'; return; }
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
       setter.call(input, item.answer); input.dispatchEvent(new Event('input', {bubbles: true})); input.focus();
+      for (const other of cards()) other.classList.toggle('filled', other === button);
       $('#status').textContent = 'Filled. Press Enter in the game to submit.';
     });
     return button;
@@ -202,7 +263,7 @@
     if (prompt !== current) {
       if (busy) send({type: 'cancel'});
       ++generation; busy = false; current = prompt; failure = false; $('#choices').replaceChildren();
-      $('#prompt').textContent = prompt || 'Waiting for a Puffer Party prompt…';
+      $('#prompt').textContent = prompt || 'Waiting for a Puffer Party prompt…'; $('#prompt').classList.toggle('idle', !prompt);
       if (prompt && enabled) suggest();
       else if (enabled) $('#status').textContent = 'Ready. Open a room to begin.';
       updateButtons();
@@ -212,10 +273,10 @@
   $('#next').onclick = () => failure && !lastReplace ? refill() : suggest({skipShown: !failure});
   $('#settings').onclick = () => send({type: 'settings'});
   $('#min').onclick = () => { const collapsed = $('section').classList.toggle('fold'); $('#min').textContent = collapsed ? '+' : '−'; };
-  $('#pick').onclick = () => { picking = true; $('#status').textContent = 'Click the prompt text on the game page.'; };
+  $('#pick').onclick = () => { picking = !picking; $('#pick').classList.toggle('on', picking); $('#status').textContent = picking ? 'Click the prompt text on the game page.' : 'Pick cancelled.'; };
   document.addEventListener('click', event => {
     if (!picking || event.composedPath().includes(host)) return;
-    event.preventDefault(); event.stopImmediatePropagation(); custom = event.target; picking = false; current = ''; scan();
+    event.preventDefault(); event.stopImmediatePropagation(); custom = event.target; picking = false; $('#pick').classList.remove('on'); current = ''; scan();
   }, true);
   // Also remember answers the user types independently of the helper.
   const rememberInput = () => {
