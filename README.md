@@ -162,7 +162,7 @@ node model-eval.mjs ../extension/banks.json --run    # calls the APIs
 
 ## Chrome Web Store build
 
-`node tools/build-store.mjs` writes `dist/krillify-<version>-store.zip` and an unpacked copy in `dist/store/`. The store build uses the listing name and leaves out the GitHub permission, so maintainer mode isn't available there. `python tools/store-art/capture.py` renders the store screenshots and promo tile into `dist/store-art/`, and `python tools/make-icons.py` redraws the icons. Listing text, permission justifications and privacy answers are in [docs/STORE.md](docs/STORE.md); the privacy policy is [docs/PRIVACY.md](docs/PRIVACY.md).
+`node tools/build-store.mjs` writes `dist/krillify-<version>-store.zip` and an unpacked copy in `dist/store/`. The store build uses the listing name and leaves out the GitHub permission, so maintainer mode isn't available there. `python tools/store-art/capture.py` renders the store screenshots and promo tile into `dist/store-art/`, and `python tools/make-icons.py` makes the icons from the banner's pufferfish. Listing text, permission justifications and privacy answers are in [docs/STORE.md](docs/STORE.md); the privacy policy is [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Contributing
 
