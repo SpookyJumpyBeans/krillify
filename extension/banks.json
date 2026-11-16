@@ -1,4 +1,21 @@
 {
+  "Name a basketball move or shot": [
+    {"answer":"floater","aliases":["teardrop shot"],"note":"A high-arc shot taken close to the basket to avoid shot blockers.","tier":"rare"},
+    {"answer":"finger roll","aliases":["finger roll shot"],"note":"A layup shot using the fingertips to roll the ball into the basket.","tier":"rare"},
+    {"answer":"runner","aliases":["running hook shot"],"note":"A one-handed hook shot taken while moving toward the basket."},
+    {"answer":"euro step","aliases":["two-step"],"note":"A deceptive dribbling move involving two steps in different directions to evade defenders."},
+    {"answer":"baby hook","aliases":["baby hook shot"],"note":"A delicate, soft hook shot typically used in close range."},
+    {"answer":"step back jumper","aliases":["step back shot"],"note":"A jump shot taken after stepping back from the defender to create space."},
+    {"answer":"up and under","aliases":["fake layup"],"note":"An offensive move used to fake a shot and get past a defender."},
+    {"answer":"shammgod","aliases":["shamgod move"],"note":"A dribbling move where the ball is pushed out and pulled back to the other hand quickly."},
+    {"answer":"spin move","aliases":["spinning dribble"],"note":"A dribbling move involving a 360-degree turn to evade defenders."},
+    {"answer":"reverse layup","aliases":["reverse shot"],"note":"A layup made on the opposite side of the basket, often using the backboard."},
+    {"answer":"dribble handoff","aliases":["handoff"],"note":"An offensive play involving passing the ball to a teammate while running."},
+    {"answer":"swish","aliases":["clean shot"],"note":"A shot that goes through the basket without touching the rim or backboard."},
+    {"answer":"windmill dunk","aliases":["360 dunk"],"note":"An acrobatic dunk where the ball is rotated in a windmill motion before dunking."},
+    {"answer":"hezi move","aliases":["hesitation dribble"],"note":"A dribbling move where the player hesitates to make defenders pause."},
+    {"answer":"Bounce pass","tier":"schooler"}
+  ],
   "Name a Bible character": [
     {"answer":"Ehud","aliases":["Ehud the Judge"],"note":"A left-handed judge who delivered Israel from Moabite oppression (Judges 3)."},
     {"answer":"Huldah","aliases":["Huldah the Prophetess"],"note":"A prophetess consulted during King Josiah's reign (2 Kings 22)."},
@@ -1730,6 +1747,24 @@
     {"answer":"Poseidon","tier":"plankton"},
     {"answer":"Hera","tier":"plankton"}
   ],
+  "Name a gymnastics skill or move": [
+    {"answer":"Thomas salto","aliases":["Thomas salto backward"],"note":"A complex backward somersault with a 1.5 twist on floor exercise","tier":"deepcut"},
+    {"answer":"Jaeger release","aliases":["Jaeger"],"note":"A forward somersault release move on horizontal bar","tier":"deepcut"},
+    {"answer":"Tkatchev","tier":"rare"},
+    {"answer":"Tkachev release","aliases":["Tkachev"],"note":"A release move on horizontal bar involving a reverse hecht over the bar"},
+    {"answer":"Diamidov","note":"A 360° turn on one arm on horizontal bar with regrasp"},
+    {"answer":"Bhardwaj vault","note":"A handspring double front somersault vault"},
+    {"answer":"Handspring double layout","note":"A vault with two front somersaults in layout position after a handspring"},
+    {"answer":"Double Arabian","note":"A double front salto with a half twist performed in floor exercise"},
+    {"answer":"Full-twisting double back","note":"A double backward salto with a full twist in floor exercise"},
+    {"answer":"Yurchenko double twist","note":"A round-off onto vaulting table followed by a back layout with two twists"},
+    {"answer":"Sissone-double twist dismount","note":"A dismount from balance beam involving a sissone jump with double twist"},
+    {"answer":"Korbut flip","aliases":["Korbut"],"note":"A backward salto performed on uneven bars initiated from standing on the high bar"},
+    {"answer":"Vault","tier":"schooler"},
+    {"answer":"Bridge","tier":"schooler"},
+    {"answer":"Handstand","tier":"plankton"},
+    {"answer":"Cartwheel","tier":"plankton"}
+  ],
   "Name a hairstyle": [
     {"answer":"watteau","aliases":["watteau roll"],"note":"A rolled hairstyle popularized in the 18th century with a loose roll of hair piled at the back."},
     {"answer":"caesar","aliases":["caesar cut"],"note":"A short, horizontally straight cut with small, horizontally forward combed bangs."},
@@ -2772,6 +2807,27 @@
     {"answer":"calico","aliases":["calico print"],"note":"pattern with small, repeated floral or geometric motifs on cotton fabric"},
     {"answer":"geometric","aliases":["geometric pattern"],"note":"designs composed of geometric shapes such as triangles, rectangles, and circles"},
     {"answer":"Stripes","tier":"tooclever"}
+  ],
+  "Name a percussion instrument": [
+    {"answer":"udu","aliases":["Nigerian udu drum"],"note":"Nigerian clay pot drum, played by hand","tier":"deepcut"},
+    {"answer":"cajón","aliases":["Peruvian box drum"],"note":"box-shaped percussion instrument played by slapping front or rear faces","tier":"rare"},
+    {"answer":"glass harp","aliases":["musical glasses"],"note":"percussion instrument using tuned glass bowls or goblets"},
+    {"answer":"phongphang","aliases":["Thai fishing boat drum"],"note":"a Thai hand drum used in traditional ceremonies"},
+    {"answer":"hang","aliases":["hang drum"],"note":"a convex steel drum played with the hands, originating from Switzerland"},
+    {"answer":"gankogui","aliases":["double bell"],"note":"double iron bell from West Africa, used in Ewe music"},
+    {"answer":"claves","aliases":["wooden claves"],"note":"pair of hardwood sticks struck together"},
+    {"answer":"tam-tam","aliases":["gong"],"note":"large flat metal percussion instrument producing a resonant sound"},
+    {"answer":"xylophone","aliases":["wooden keyboard percussion"],"note":"instrument with wooden bars struck by mallets"},
+    {"answer":"marimba","aliases":["bass xylophone"],"note":"large wooden keyboard percussion with resonators"},
+    {"answer":"djembe","aliases":["West African drum"],"note":"rope-tuned skin-covered goblet drum"},
+    {"answer":"tabla","aliases":["Indian drums"],"note":"pair of twin hand drums from South Asia"},
+    {"answer":"snare drum","aliases":["side drum"],"note":"drum with metal wires stretched across the bottom head"},
+    {"answer":"tambourine","aliases":["frame drum with jingles"],"note":"frame drum with small metal discs"},
+    {"answer":"cowbell","aliases":["clapperless bell"],"note":"handheld metal bell without clapper"},
+    {"answer":"maracas","aliases":["shakers"],"note":"percussion instrument with seeds or beads inside"},
+    {"answer":"vibraslap","aliases":["jawbone"],"note":"percussion instrument made of a wooden ball and metal resonator"},
+    {"answer":"ratchet","aliases":["noisemaker"],"note":"percussion instrument generating sound by rotating a cogwheel"},
+    {"answer":"Drums","tier":"plankton"}
   ],
   "Name a phase of the Moon": [
     {"answer":"Third Quarter","aliases":["Last Quarter"],"note":"Moon is half illuminated on the left side, occurring after the Full Moon phase","tier":"deepcut"},
@@ -5203,6 +5259,26 @@
     {"answer":"mites","note":"small arthropods related to ticks"},
     {"answer":"piper","aliases":["piper fish"],"note":"a name sometimes used for some species of small fish"}
   ],
+  "Name an app or website for writing documents or taking notes": [
+    {"answer":"Quip","note":"Collaborative documents and chat app","tier":"deepcut"},
+    {"answer":"Org-mode","aliases":["Org mode"],"note":"Emacs mode for notes, planning, and writing"},
+    {"answer":"Typora","note":"Minimalist Markdown editor"},
+    {"answer":"Notion","note":"All-in-one workspace for notes and docs"},
+    {"answer":"Bear","note":"Markdown note-taking app for Apple devices"},
+    {"answer":"Simplenote","note":"Lightweight note-taking app by Automattic"},
+    {"answer":"Evernote","note":"Popular note-taking app with sync"},
+    {"answer":"Microsoft Word Online","aliases":["Word Online"],"note":"Microsoft's cloud-hosted word processor"},
+    {"answer":"Dropbox Paper","aliases":["Paper"],"note":"Collaborative document editor by Dropbox"},
+    {"answer":"Zoho Writer","aliases":["Zoho Docs"],"note":"Online word processor in Zoho suite"},
+    {"answer":"Coda","note":"Document and spreadsheet hybrid app"},
+    {"answer":"Joplin","note":"Open-source note-taking and to-do app"},
+    {"answer":"OneNote","note":"Microsoft's digital notebook application"},
+    {"answer":"HackMD","aliases":["CodiMD"],"note":"Collaborative Markdown editor"},
+    {"answer":"Turtl","note":"Encrypted note-taking app"},
+    {"answer":"Google Docs","aliases":["Docs"],"note":"Cloud-based document editor by Google","tier":"plankton"},
+    {"answer":"Apple Notes","tier":"plankton"},
+    {"answer":"Microsoft Word","tier":"plankton"}
+  ],
   "Name an app where you can video call": [
     {"answer":"Houseparty","aliases":["House party"],"note":"Group video chat app popularized among younger users before being discontinued"},
     {"answer":"ooVoo","aliases":["OOVOO"],"note":"Video chat and messaging app popular in the early 2010s"},
@@ -5356,6 +5432,19 @@
     {"answer":"astrological","aliases":["horoscopic"],"note":"Relating to the study of the movements of stars and planets for divination."},
     {"answer":"astroblast","aliases":["earlystarcell"],"note":"An immature neural precursor cell shaped star-like."},
     {"answer":"asteraceae","aliases":["daisyfamily"],"note":"A large family of flowering plants commonly known as aster, daisy, or sunflower family."}
+  ],
+  "Name an English word containing “atch”": [
+    {"answer":"scratched","aliases":["scratched"],"note":"past tense of 'scratch', meaning marked with scratches"},
+    {"answer":"detached","aliases":["detached"],"note":"separated or disconnected"},
+    {"answer":"patched","aliases":["patched"],"note":"repaired by putting a piece over a hole"},
+    {"answer":"thatch","tier":"schooler"},
+    {"answer":"swatch","tier":"schooler"},
+    {"answer":"patch","note":"a piece of material used to cover a hole","tier":"plankton"},
+    {"answer":"latch","note":"a device for holding a door or gate closed","tier":"plankton"},
+    {"answer":"catch","note":"to capture or seize something","tier":"plankton"},
+    {"answer":"hatch","note":"an opening in a floor, ceiling, or roof","tier":"plankton"},
+    {"answer":"match","note":"a contest or a small stick for making fire","tier":"plankton"},
+    {"answer":"watch","tier":"plankton"}
   ],
   "Name an English word containing “auto”": [
     {"answer":"autoecology","aliases":["auto-ecology"],"note":"study of an individual organism or species in relation to the environment"},
@@ -5930,6 +6019,30 @@
     {"answer":"get him back!","note":"An emotionally charged song from 'Guts,' 2023","tier":"schooler"},
     {"answer":"hope ur ok","note":"A song on the album 'Guts' by Olivia Rodrigo","tier":"schooler"},
     {"answer":"deja vu","note":"Hit single from the album 'Sour'","tier":"plankton"}
+  ],
+  "Name an Olympic track and field event": [
+    {"answer":"3000 meters steeplechase","aliases":["3000m steeplechase"],"note":"A long-distance obstacle race including water jumps"},
+    {"answer":"hammer throw","note":"A throwing event where a heavy ball attached to a wire is thrown"},
+    {"answer":"discus throw","note":"Throwing a heavy disc-shaped object"},
+    {"answer":"triple jump","note":"A horizontal jump involving a hop, step, and jump"},
+    {"answer":"high jump","note":"Jumping vertically over a bar"},
+    {"answer":"400 meters hurdles","aliases":["400m hurdles"],"note":"A sprint race with hurdles over 400 meters"},
+    {"answer":"100 meters dash","aliases":["100m sprint"],"note":"A short-distance sprint race"},
+    {"answer":"200 meters dash","aliases":["200m sprint"],"note":"A sprint race over 200 meters"},
+    {"answer":"800 meters","note":"A middle-distance running race"},
+    {"answer":"1500 meters","aliases":["metric mile"],"note":"A middle-distance running event"},
+    {"answer":"5000 meters","note":"A long-distance running race"},
+    {"answer":"10000 meters","note":"The longest standard track race"},
+    {"answer":"4x100 meters relay","aliases":["400 meters relay"],"note":"Relay race with four runners each running 100 meters"},
+    {"answer":"4x400 meters relay","aliases":["1600 meters relay"],"note":"Relay race with four runners each running 400 meters"},
+    {"answer":"pole vault","note":"Jumping over a high bar with a pole","tier":"schooler"},
+    {"answer":"javelin throw","note":"Throwing a spear-like implement for distance","tier":"schooler"},
+    {"answer":"110 metres hurdles","tier":"schooler"},
+    {"answer":"400 metres","tier":"schooler"},
+    {"answer":"200 metres","tier":"schooler"},
+    {"answer":"long jump","aliases":["broad jump"],"note":"A horizontal jump for distance","tier":"plankton"},
+    {"answer":"100 metres","tier":"plankton"},
+    {"answer":"Marathon","tier":"plankton"}
   ],
   "Name an urban area with more than five million people": [
     {"answer":"Chengdu","aliases":["Chengtu"],"note":"Capital of Sichuan province, China; metro area over 16 million","tier":"rare"},
