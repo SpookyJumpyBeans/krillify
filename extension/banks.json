@@ -18,6 +18,27 @@
     {"answer":"Eliphaz","aliases":["Eliphaz the Temanite"],"note":"Friend of Job who questioned his suffering (Job 4)."},
     {"answer":"Abiathar","aliases":["Abiathar the Priest"],"note":"High priest during King David's reign (1 Samuel 22)."}
   ],
+  "Name a breakfast cereal brand": [
+    {"answer":"Kashi","aliases":["Kashi Company"],"note":"A natural foods cereal brand owned by Kellogg's"},
+    {"answer":"Barbara's Bakery","aliases":["Barbara's"],"note":"Organic and natural breakfast cereal brand"},
+    {"answer":"Erewhon","aliases":["Erewhon Organic"],"note":"Early organic cereal brand now owned by Post Consumer Brands"},
+    {"answer":"Food for Life","aliases":["Ezekiel"],"note":"Brand known for sprouted grain cereals"},
+    {"answer":"Three Sisters","aliases":["Three Sisters Cereals"],"note":"Brand focused on gluten-free and organic cereals"},
+    {"answer":"Nature's Path","aliases":["Nature's Path Organic"],"note":"Canadian organic cereal company"},
+    {"answer":"Grimmway Farms","aliases":["Grimmway Carrots Cereal"],"note":"Known for carrot-based breakfast cereals"},
+    {"answer":"Arrowhead Mills","aliases":["Arrowhead"],"note":"Producer of organic cereals and grains"},
+    {"answer":"Back to Nature","aliases":["Back to Nature Cereals"],"note":"Natural food brand with cereal products"},
+    {"answer":"Munky","aliases":["Munky Cereal"],"note":"Obscure brand from local markets"},
+    {"answer":"Attune Foods","aliases":["Attune"],"note":"Known for probiotic cereals"},
+    {"answer":"Bear Naked","aliases":["Bear Naked Granola"],"note":"Granola and cereal brand"},
+    {"answer":"Pofiber","aliases":["Pofiber Cereal"],"note":"High fiber cereal brand"},
+    {"answer":"Freedom Foods","aliases":["Freedom Foods Group"],"note":"Australian company producing gluten-free cereals"},
+    {"answer":"Cascadian Farm","aliases":["Cascadian Farm Organic"],"note":"Organic cereals owned by General Mills"},
+    {"answer":"Sunspire","aliases":["Sunspire Organic"],"note":"Organic cereal brand"},
+    {"answer":"Barbara's Puffins","aliases":["Puffins Cereal"],"note":"Popular natural grain cereal line"},
+    {"answer":"Newman's Own Organics","aliases":["Newman's Own"],"note":"Producer of organic cereals and snacks"},
+    {"answer":"Raisin Bran","tier":"schooler"}
+  ],
   "Name a calisthenics exercise (bodyweight exercises only)": [
     {"answer":"back lever","aliases":["backlever"],"note":"A static hold with the body held horizontally face down, gripping a bar behind the back."},
     {"answer":"front lever","aliases":["frontlever"],"note":"A static hold with the body parallel to the ground face up, gripping a bar."},
@@ -665,6 +686,20 @@
     {"answer":"United Kingdom","tier":"plankton"},
     {"answer":"United States","tier":"plankton"},
     {"answer":"Russia","tier":"plankton"}
+  ],
+  "Name a country whose name starts with B": [
+    {"answer":"Burkina Faso","tier":"deepcut"},
+    {"answer":"Benin","note":"A country in West Africa, known for its rich history and cultural heritage.","tier":"rare"},
+    {"answer":"Botswana","note":"A landlocked country in Southern Africa, famous for its wildlife reserves.","tier":"rare"},
+    {"answer":"Barbados","tier":"rare"},
+    {"answer":"Bhutan","note":"A landlocked country in South Asia, located in the Eastern Himalayas."},
+    {"answer":"Burundi","note":"A small, landlocked country in East Africa."},
+    {"answer":"Brunei","aliases":["Brunei Darussalam"],"note":"A tiny, oil-rich nation on the island of Borneo in Southeast Asia."},
+    {"answer":"Bahrain","note":"An island country in the Persian Gulf."},
+    {"answer":"Belize","note":"The only English-speaking country in Central America."},
+    {"answer":"Brazil","note":"The largest country in both South America and Latin America."},
+    {"answer":"Bulgaria","note":"A country in Southeast Europe on the Balkan Peninsula."},
+    {"answer":"Bahamas","note":"An archipelagic state within the Lucayan Archipelago in the Atlantic Ocean.","tier":"schooler"}
   ],
   "Name a country whose name starts with M": [
     {"answer":"Montenegro","aliases":["ME"],"note":"Southeastern European country on the Adriatic coast"},
