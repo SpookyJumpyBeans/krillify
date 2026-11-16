@@ -20,6 +20,7 @@ h1 span{color:var(--cyan);text-shadow:0 0 12px rgba(77,227,255,.5)}
 h2{font:inherit;font-size:15px;letter-spacing:3.3px;text-transform:uppercase}
 .body{color:var(--ink);margin-bottom:12px}
 .hint{font-size:15px;line-height:1.2;color:var(--dim);margin:8px 0 14px}
+.welcome{box-shadow:0 0 0 2px var(--abyss),0 0 0 4px var(--cyan),0 0 26px rgba(77,227,255,.3)}
 .fine{font-size:14px;color:var(--dim);text-align:center;border-top:2px dashed var(--hair);padding-top:12px;margin:0 4px}
 code{font:inherit;color:var(--cyan)}
 .label{display:block;font-size:12px;letter-spacing:2.9px;text-transform:uppercase;color:var(--drift);margin-bottom:5px}

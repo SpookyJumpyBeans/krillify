@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Krillify",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Three obscure Puffer Party suggestions, live prompt detection, and used-answer tracking for each game.",
   "icons": {
     "16": "icons/icon-16.png",

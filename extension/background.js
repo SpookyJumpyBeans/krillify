@@ -6,7 +6,18 @@ import {answerSystemPrompt, answerUserMessage, gameExamples} from './prompt.js';
 const ready = chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'});
 let queue = Promise.resolve();
 const serial = action => { const result = queue.then(action); queue = result.catch(() => {}); return result; };
-const defaults = {enabled: false, model: 'gpt-4.1-mini', apiKey: ''};
+// Suggestions are on unless the user turns them off; the bundled bank needs no key.
+const defaults = {enabled: true, model: 'gpt-4.1-mini', apiKey: ''};
+
+// On a fresh install, save the defaults and open Settings with a short welcome, so new users
+// know Krillify is on and where it appears. Updates leave settings alone.
+chrome.runtime.onInstalled?.addListener(async ({reason}) => {
+  if (reason !== 'install') return;
+  await ready;
+  const {settings} = await chrome.storage.local.get('settings');
+  if (!settings) await chrome.storage.local.set({settings: defaults});
+  await chrome.tabs.create({url: chrome.runtime.getURL('options.html#welcome')});
+});
 const active = new Map();
 
 // The shared bank ships with the extension, so every install gets it without a key.
@@ -176,7 +187,7 @@ async function handle(message, sender, controller) {
   }
   if (message.type === 'status') {
     const {settings = {}} = await chrome.storage.local.get('settings');
-    return {enabled:!!settings.enabled,version:chrome.runtime.getManifest().version};
+    return {enabled:settings.enabled !== false,version:chrome.runtime.getManifest().version};
   }
   const data = await chrome.storage.local.get(['settings', 'games', 'pools', 'verified']);
   const settings = {...defaults, ...data.settings};

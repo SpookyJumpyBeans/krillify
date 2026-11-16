@@ -1,7 +1,7 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.6.0" src="https://img.shields.io/badge/version-1.6.0-4de3ff?style=for-the-badge&labelColor=0b1a2b">
+  <img alt="Version 1.6.1" src="https://img.shields.io/badge/version-1.6.1-4de3ff?style=for-the-badge&labelColor=0b1a2b">
   <img alt="Works on Chrome and Edge" src="https://img.shields.io/badge/works_on-Chrome_%C2%B7_Edge-ffd166?style=for-the-badge&logo=googlechrome&logoColor=ffd166&labelColor=0b1a2b">
   <img alt="Manifest V3" src="https://img.shields.io/badge/manifest-V3-9ce8cb?style=for-the-badge&labelColor=0b1a2b">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=for-the-badge&logo=opensourceinitiative&logoColor=9ce8cb&labelColor=0b1a2b">
@@ -13,6 +13,8 @@ Krillify is an unofficial Chrome/Edge companion for [Krillion's Puffer Party](ht
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
+> **v1.6.1** turns suggestions on at install and opens Settings with a short welcome, so new users can play straight away.
+>
 > **v1.6.0** prepares the Chrome Web Store release: verified answers now rank above every unverified guess, the shared bank covers 301 prompts, and the extension has its own icon.
 >
 > **v1.5.0** grounds the AI in game results: for each prompt it sees the answers the game accepted (with their tiers) and rejected, and is asked for real, standard names at that level of detail, facts it is sure of, and less common choices only within that list.
@@ -148,6 +150,7 @@ node tests/worker-v120.cjs
 node tests/worker-refill.cjs
 node tests/worker-bank.cjs
 node tests/worker-prompt.cjs
+node tests/worker-install.cjs
 ```
 
 ## Comparing models

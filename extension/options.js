@@ -3,10 +3,11 @@ const $ = id => document.getElementById(id);
 await chrome.storage.local.setAccessLevel({accessLevel:'TRUSTED_CONTEXTS'});
 async function load() {
   const {settings = {}, games = {}} = await chrome.storage.local.get(['settings', 'games']);
-  $('enabled').checked = !!settings.enabled; $('apiKey').value = settings.apiKey || ''; $('model').value = settings.model || 'gpt-4.1-mini';
+  $('enabled').checked = settings.enabled !== false; $('apiKey').value = settings.apiKey || ''; $('model').value = settings.model || 'gpt-4.1-mini';
   $('count').textContent = 'Used answers are tracked separately for each game. New games can reuse previous answers.';
 }
 await load();
+$('welcome').hidden = location.hash !== '#welcome';
 $('version').textContent = 'v' + chrome.runtime.getManifest().version;
 $('settings').addEventListener('submit', async event => {
   event.preventDefault();
