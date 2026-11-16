@@ -26,7 +26,10 @@ async function recordSeen(message) {
     const id = normalize(answer);
     if (!id) continue;
     const previous = record.answers[id];
-    record.answers[id] = {answer: previous?.answer || answer, tier: cleanTier(value.tier) || previous?.tier || '', n: (previous?.n || 0) + 1};
+    // A verified acceptance is never overwritten by a later rejection of the same answer.
+    let tier = cleanTier(value.tier) || previous?.tier || '';
+    if (tier === 'miss' && previous?.tier && previous.tier !== 'miss') tier = previous.tier;
+    record.answers[id] = {answer: previous?.answer || answer, tier, n: (previous?.n || 0) + 1};
   }
   record.answers = Object.fromEntries(Object.entries(record.answers).slice(-200));
   record.updated = Date.now(); verified[key] = record;

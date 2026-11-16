@@ -60,31 +60,46 @@
   const bubbleVersions = new WeakMap();
   let replacementTimer;
   let liveRoom = null;
-  // The feed doesn't say which category an accepted answer belongs to, so an answer is only
-  // credited to the prompt when it arrives mid-round with the same prompt as the update before.
-  // The first update after (re)connecting, and any update that changes the prompt, are skipped.
-  let feedGame = '', feedPrompt = '', syncedGame = '';
+  // The feed tags every accepted answer, and every answer rejected as not on the game's list
+  // ("miss"), with its category's text. Answers from a category this tab never saw arrive with
+  // an empty prompt and aren't recorded.
+  let feedGame = '', syncedGame = '';
   const feedSeen = new Set();
+  const feedRejects = r => Array.isArray(r.rejects) ? r.rejects.slice(0, 500) : [];
   function recordFeed(r) {
-    const arrived = r.answers.slice(0, 2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && answerKey(x.answer) && !feedSeen.has(answerKey(x.answer)));
-    arrived.forEach(x => feedSeen.add(answerKey(x.answer)));
-    const steady = r.game === feedGame && r.prompt === feedPrompt && r.phase === 'round' && r.prompt.trim();
-    if (r.game !== feedGame) { feedSeen.clear(); r.answers.forEach(x => typeof x?.answer === 'string' && feedSeen.add(answerKey(x.answer))); }
-    feedGame = r.game; feedPrompt = r.prompt;
-    if (steady && arrived.length) send({type: 'record', prompt: r.prompt.trim(), answers: arrived.map(x => ({answer: x.answer, tier: typeof x.tier === 'string' ? x.tier : ''}))});
+    if (r.game !== feedGame) { feedSeen.clear(); feedGame = r.game; }
+    const items = [
+      ...r.answers.map(x => ({answer: x?.answer, tier: typeof x?.tier === 'string' ? x.tier : '', prompt: x?.prompt})),
+      ...feedRejects(r).filter(x => x?.why === 'miss').map(x => ({answer: x.text, tier: 'miss', prompt: x.prompt}))
+    ];
+    const byPrompt = new Map();
+    for (const x of items) {
+      if (typeof x.answer !== 'string' || x.answer.length > 120 || !answerKey(x.answer)) continue;
+      if (typeof x.prompt !== 'string' || !x.prompt.trim() || x.prompt.length > 500) continue;
+      const id = (x.tier === 'miss' ? 'x|' : 'o|') + answerKey(x.prompt) + '|' + answerKey(x.answer);
+      if (feedSeen.has(id)) continue;
+      feedSeen.add(id);
+      if (!byPrompt.has(x.prompt)) byPrompt.set(x.prompt, []);
+      byPrompt.get(x.prompt).push({answer: x.answer, tier: x.tier});
+    }
+    for (const [prompt, answers] of byPrompt) send({type: 'record', prompt: prompt.trim(), answers});
   }
+  const feedLive = () => !!liveRoom && liveRoom.game.split(':')[0].toLowerCase() === location.pathname.split('/')[2]?.toLowerCase();
   window.addEventListener('message', event => {
     if (event.source !== window || event.origin !== location.origin || event.data?.channel !== 'krillify-game-v1') return;
-    if (event.data.disconnected) { liveRoom = null; feedGame = ''; return; }
+    if (event.data.disconnected) { liveRoom = null; return; }
     const r = event.data.room;
     if (!r || typeof r.game !== 'string' || !/^[a-z0-9:._/-]{1,140}$/i.test(r.game) || !['lobby','countdown','round','over'].includes(r.phase) || typeof r.prompt !== 'string' || r.prompt.length > 500 || !Array.isArray(r.answers)) return;
     liveRoom = r; syncGame(); recordFeed(r);
-    const fresh = r.answers.slice(0,2500).filter(x => typeof x?.answer === 'string' && x.answer.length <= 120 && !usedInRoom.has(answerKey(x.answer)));
-    for (const item of fresh) usedInRoom.add(answerKey(item.answer));
+    // Accepted answers and rejected attempts ("already said" or "not on the list") are both
+    // out of play for the rest of this game.
+    const played = [...r.answers.slice(0, 2500).map(x => x?.answer), ...feedRejects(r).map(x => x?.text)];
+    const fresh = played.filter(x => typeof x === 'string' && x.length <= 120 && answerKey(x) && !usedInRoom.has(answerKey(x)));
+    for (const answer of fresh) usedInRoom.add(answerKey(answer));
     const removed = dropUsed();
     if (fresh.length) {
       const scope = game;
-      send({type:'remember', game:scope, answers:fresh.map(x=>x.answer)}).then(() => { if (removed && game === scope) refill(); });
+      send({type:'remember', game:scope, answers:fresh}).then(() => { if (removed && game === scope) refill(); });
     }
     scan();
   });
@@ -292,8 +307,11 @@
     if (!picking || event.composedPath().includes(host)) return;
     event.preventDefault(); event.stopImmediatePropagation(); custom = event.target; picking = false; $('#pick').classList.remove('on'); current = ''; scan();
   }, true);
-  // Also remember answers the user types independently of the helper.
+  // Without the game feed, fall back to treating Enter in the answer box as a submission. With
+  // it, wait for the game's verdict: it ignores Enter when it isn't your turn, and the feed
+  // reports both accepted and rejected answers.
   const rememberInput = () => {
+    if (feedLive()) return;
     const input = gameInput(), answer = input?.value?.trim();
     if (!answer || !game || answer === lastSubmit) return;
     lastSubmit = answer;

@@ -2,7 +2,8 @@ import {normalize, cleanCandidates, tiers} from './core.js';
 
 // Puffer Party rarity tiers, rarest first. Answers seen accepted in a real game carry the tier
 // the game gave them; "accepted" marks a verified answer whose tier wasn't reported.
-const rank = Object.fromEntries(tiers.map((tier, i) => [tier, [0, 1, 2, 2.5, 3, 4, 5][i]]));
+const rank = Object.fromEntries(tiers.map((tier, i) => [tier, [0, 1, 2, 2.5, 3, 4, 5, 99][i]]));
+const acceptedTier = tier => !!tier && tier !== 'miss';
 export const tierRank = item => rank[item?.tier] ?? 3;
 export const cleanTier = value => {
   const tier = normalize(value);
@@ -28,14 +29,18 @@ export function indexBank(bank) {
 function fold(list, item) {
   const keys = [item.answer, ...(item.aliases || [])].map(normalize).filter(Boolean);
   const existing = list.find(other => [other.answer, ...(other.aliases || [])].some(value => keys.includes(normalize(value))));
-  if (!existing) { list.push({...item, aliases: [...(item.aliases || [])]}); return true; }
+  // A rejection only demotes an answer we already have; other players' rejected guesses (typos,
+  // junk) never become entries of their own.
+  if (!existing) { if (item.tier === 'miss') return false; list.push({...item, aliases: [...(item.aliases || [])]}); return true; }
   let changed = false;
   for (const alias of [item.answer, ...(item.aliases || [])]) {
     const known = [existing.answer, ...existing.aliases].map(normalize);
     if (!known.includes(normalize(alias)) && existing.aliases.length < 8) { existing.aliases.push(alias); changed = true; }
   }
-  if (item.tier && item.tier !== 'accepted' && existing.tier !== item.tier) { existing.tier = item.tier; changed = true; }
-  else if (item.tier === 'accepted' && !existing.tier) { existing.tier = 'accepted'; changed = true; }
+  // A verified acceptance always beats a rejection; a rejection only lands on an unverified answer.
+  if (item.tier === 'miss') { if (!acceptedTier(existing.tier) && existing.tier !== 'miss') { existing.tier = 'miss'; changed = true; } }
+  else if (item.tier && item.tier !== 'accepted' && existing.tier !== item.tier) { existing.tier = item.tier; changed = true; }
+  else if (item.tier === 'accepted' && (!existing.tier || existing.tier === 'miss')) { existing.tier = 'accepted'; changed = true; }
   if (!existing.note && item.note) { existing.note = item.note; changed = true; }
   return changed;
 }

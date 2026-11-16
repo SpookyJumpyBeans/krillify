@@ -26,6 +26,14 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  const text=serializeBank(merged.bank);assert.deepEqual(indexBank(JSON.parse(text)).get('nameafish').answers.map(x=>x.answer),['Oarfish','Ide','Burbot','Wels','Cod']);
  assert.equal(serializeBank(mergeBank(JSON.parse(text),pools,{'q:nameafish':seen}).bank),text,'a second merge is a no-op');
 
+ // Rejections ("miss"): never suggested, never added as new entries, and a verified acceptance wins.
+ assert.deepEqual(takeThree([{answer:'Bad',tier:'miss'},'Good'],[],[],3,()=>0).map(x=>x.answer),['Good']);
+ const missRecord={prompt:'Name a fish',answers:{burbot:{answer:'Burbot',tier:'miss'},junk:{answer:'Fishy fish',tier:'miss'},oarfish:{answer:'Oarfish',tier:'miss'}}};
+ const missPool=combinePool([[{answer:'Oarfish',tier:'deepcut'},'Burbot','Wels']],missRecord);
+ assert.deepEqual(missPool.map(x=>x.answer+':'+(x.tier||'')),['Oarfish:deepcut','Wels:','Burbot:miss']);
+ const missBank=mergeBank({'Name a fish':[{answer:'Burbot',tier:'miss'},'Wels']},{},{'q:nameafish':{prompt:'Name a fish',answers:{burbot:{answer:'Burbot',tier:'rare'}}}}).bank;
+ assert.deepEqual(missBank['Name a fish'].map(x=>x.answer+':'+(x.tier||'')),['Burbot:rare','Wels:'],'an acceptance overrides an earlier miss');
+
  // Worker: shared bank without a key, recording, and the maintainer sync.
  const shared={'Name a fish':[{answer:'Oarfish',tier:'deepcut'},'Burbot','Wels']};
  const data={settings:{enabled:true,apiKey:''},games:{},pools:{},maintainer:{enabled:false}};
@@ -47,7 +55,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  };
  let listener;
  const sandbox={...core,...bankMod,console,AbortController,setTimeout,clearTimeout,fetch,TextEncoder,TextDecoder,atob,btoa,
-  chrome:{permissions:{contains:async()=>true},runtime:{getURL:p=>'chrome-extension://test/'+p,getManifest:()=>({version:'1.3.0'}),onMessage:{addListener:fn=>listener=fn}},
+  chrome:{permissions:{contains:async()=>true},runtime:{getURL:p=>'chrome-extension://test/'+p,getManifest:()=>({version:'1.4.0'}),onMessage:{addListener:fn=>listener=fn}},
    storage:{local:{setAccessLevel:async()=>{},get:async keys=>Object.fromEntries((Array.isArray(keys)?keys:[keys]).map(k=>[k,structuredClone(data[k])])),set:async x=>Object.assign(data,structuredClone(x))}}}};
  vm.runInNewContext(fs.readFileSync(base+'background.js','utf8').replace(/^import .*;\r?\n/gm,''),sandbox);
  const tab={tab:{id:1},url:'https://krillion.io/party/TEST'},page={url:'chrome-extension://test/options.html'};
@@ -59,6 +67,12 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  await send({type:'record',prompt:'Name a fish',answers:[{answer:'Oarfish',tier:'krillion'},{answer:'Cod',tier:'plankton'},{answer:'',tier:'rare'}]});
  await send({type:'record',prompt:'Name a fish',answers:[{answer:'oarfish',tier:''}]});
  assert.deepEqual(data.verified['q:nameafish'].answers,{oarfish:{answer:'Oarfish',tier:'krillion',n:2},cod:{answer:'Cod',tier:'plankton',n:1}});
+ await send({type:'record',prompt:'Name a fish',answers:[{answer:'Oarfish',tier:'miss'},{answer:'Wels',tier:'miss'}]});
+ assert.equal(data.verified['q:nameafish'].answers.oarfish.tier,'krillion','a later miss never overwrites an acceptance');
+ assert.equal(data.verified['q:nameafish'].answers.wels.tier,'miss');
+ result=await send({type:'suggest',game:'TEST:2',prompt:'Name a fish'});
+ assert(!result.answers.some(x=>x.answer==='Wels'),'rejected answers are not suggested');
+ delete data.verified['q:nameafish'].answers.wels;
 
  assert.equal((await send({type:'sync'})).skipped,'Maintainer mode is off.');assert.equal(gh.calls.length,0);
  assert.match((await send({type:'sync',force:true})).error,/Unrecognized sender/);
@@ -85,5 +99,5 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 
  gh.file=null;data.maintainer.token='bad';
  result=await send({type:'sync',force:true},page);assert(result.error);assert.equal(data.syncState.failed,true);
- console.log('PASS random picks within the rarest six, tier ranking, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, noreply author, commit, no-op, update with sha, rate limit, sender checks, no commit without an identity, failure state)');
+ console.log('PASS random picks within the rarest six, tier ranking, rejected answers, bank merge and stable serialization, shared bank without a key, verified-answer recording, and maintainer sync (branch creation, noreply author, commit, no-op, update with sha, rate limit, sender checks, no commit without an identity, failure state)');
 })().catch(e=>{console.error(e);process.exitCode=1});

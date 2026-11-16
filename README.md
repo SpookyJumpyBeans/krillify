@@ -1,7 +1,7 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.3.0" src="https://img.shields.io/badge/version-1.3.0-9ce8cb?style=flat-square&labelColor=102438">
+  <img alt="Version 1.4.0" src="https://img.shields.io/badge/version-1.4.0-9ce8cb?style=flat-square&labelColor=102438">
   <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%2F%20Edge-4de3ff?style=flat-square&labelColor=102438">
   <img alt="Manifest V3" src="https://img.shields.io/badge/extension-Manifest%20V3-ffd166?style=flat-square&labelColor=102438">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=flat-square&labelColor=102438">
@@ -15,7 +15,9 @@ Krillify is an unofficial Chrome/Edge companion for [Krillion's Puffer Party](ht
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
-> **v1.3.0** ships a shared answer bank to every install, ranks answers by the rarity tiers seen in real games, and picks at random from the rarest few so players sharing the bank don't all give the same answers. The bank keeps three answers on screen and refills only the slot you used.
+> **v1.4.0** learns from rejected answers: an answer the game says isn't on its list is never suggested again for that prompt, in later games or through the shared bank. Each accepted or rejected answer is now matched to its category exactly, and with the game feed connected your own submissions count only once the game accepts or rejects them.
+>
+> **v1.3.0** shipped a shared answer bank to every install, ranks answers by the rarity tiers seen in real games, and picks at random from the rarest few so players sharing the bank don't all give the same answers. The bank keeps three answers on screen and refills only the slot you used.
 >
 > **v1.2.0** added structured game-state detection with a DOM fallback, historical accepted-answer tracking, five original starter banks, and one bounded retry for a fast server failure. Rarity and acceptance remain estimates; this release has not been benchmarked against other extensions in live matches.
 
@@ -57,7 +59,7 @@ No build step, package install, or server is needed.
 ## During a game
 
 - **Click an answer** to fill the input. Filling or viewing a suggestion does not mark it used.
-- **Submit in the game** to add that answer to the current game's exclusion list. Manually typed answers are tracked too. Submission attempts are remembered even if the game rejects them.
+- **Submit in the game.** With the game feed connected, an answer counts as used once the game accepts it or rejects it. The game ignores Enter when it isn't your turn, so those presses don't count. Without the feed, Krillify falls back to counting every Enter in the answer box, accepted or not.
 - **Next 3** temporarily skips the current suggestions and offers another batch. It does not permanently exclude answers you only viewed.
 - **New game, fresh used list.** The helper uses the server game identity when available, with lobby, countdown, game-over and category-counter transitions as a fallback. Ordinary category changes keep the same game's list.
 - **Refreshes in the same tab** retain the game identity. Tabs observing the same server game share its used list; the DOM fallback uses a per-tab identity.
@@ -71,7 +73,9 @@ Structured tracking can recover earlier accepted answers included in the server 
 
 `extension/banks.json` ships with the extension, so every install can answer the prompts in it without an API key. It uses the same format as an imported bank, with an optional `tier` on each answer.
 
-**Verified answers.** When another player's answer is accepted, Krillify saves it with the rarity tier the game gave it (`krillion`, `deepcut`, `rare`, `schooler`, `plankton`, and so on). The game feed doesn't say which category an answer belongs to, so an answer is only saved when it arrives mid-round with the same category as the update before it. The snapshot sent when you join, updates that change the category, and the first update after a reconnect are skipped. Saved tiers rank answers in your local suggestions straight away: verified rare answers move to the top, verified common ones to the bottom, and unverified answers keep their order.
+**Verified answers.** Every accepted answer in the game feed is saved with the rarity tier the game gave it (`krillion`, `deepcut`, `rare`, `schooler`, `plankton`, and so on). The feed marks each category change, so each answer is matched to its exact category. Answers from a category that ended before you joined are skipped, because their text was never on screen. Saved tiers rank your suggestions straight away: verified rare answers move to the top, verified common ones to the bottom, and unverified answers keep their order.
+
+**Rejected answers.** When the game rejects an answer as not on its list ("no echo"), Krillify marks it `miss` for that prompt and never suggests it again, and the AI is told to avoid it too. Answers rejected only because someone already said them are just skipped for that game. A rejection only applies to an answer already in your cache or the bank, so other players' typos never become entries, and a later acceptance always overrides it. Matching ignores case, spaces, punctuation and accents, but not typos.
 
 **Random picks.** Suggestions are drawn at random from the six rarest unused answers rather than always the top three, so players sharing the bank spread across more answers.
 

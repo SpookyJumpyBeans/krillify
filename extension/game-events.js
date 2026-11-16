@@ -4,10 +4,10 @@
   const channel = 'krillify-game-v1';
   const socketType = window.WebSocket;
   const streamType = window.EventSource;
-  let owner = null, state = null, identity = '', used = new Map();
+  let owner = null, state = null, identity = '', used = new Map(), rejects = new Map(), titles = new Map();
   const publish = () => window.postMessage({channel, room: {
     game: identity, phase: state.phase, prompt: state.category?.text || '',
-    category: state.category?.index || 0, answers: [...used.values()].slice(-2500)
+    category: state.category?.index || 0, answers: [...used.values()].slice(-2500), rejects: [...rejects.values()].slice(-500)
   }}, location.origin);
   function ingest(packet, token, code, snapshot = false) {
     if (owner !== token) return;
@@ -20,19 +20,33 @@
     } else return;
     if (!state || !Array.isArray(state.events)) return;
     const next = code + ':' + (state.gameId || state.gameNumber || 0);
-    if (next !== identity) { identity = next; used.clear(); }
+    if (next !== identity) { identity = next; used.clear(); rejects.clear(); titles.clear(); }
+    // Category events carry only an index, so remember each index's text while it's on screen.
+    const shown = state.category;
+    if (Number.isInteger(shown?.index) && typeof shown.text === 'string' && shown.text.trim()) titles.set(shown.index, shown.text.trim().slice(0, 500));
     let start = 0;
     for (let i=0;i<state.events.length;i++) if (['start','lobby'].includes(state.events[i].kind)) start=i+1;
+    // Each answer belongs to the category of the latest category event before it. Its prompt is
+    // '' when that category's text was never seen (e.g. it ended before this tab joined).
+    let index = null;
     for (const event of state.events.slice(start)) {
+      if (event.kind === 'category' && Number.isInteger(event.index)) index = event.index;
+      const prompt = index === null ? '' : titles.get(index) || '';
       if (event.kind === 'pass' && typeof event.answer === 'string' && event.answer.length <= 120) {
-        used.set(event.answer.toLowerCase(), {answer:event.answer, tier:typeof event.tier === 'string' ? event.tier : ''});
+        const key = event.answer.toLowerCase();
+        used.set(key, {answer:event.answer, tier:typeof event.tier === 'string' ? event.tier : '', prompt: used.get(key)?.prompt || prompt});
+      }
+      // why "miss": not on the game's answer list. why "repeat": already said this game.
+      if (event.kind === 'reject' && typeof event.text === 'string' && event.text.length <= 120 && typeof event.why === 'string') {
+        const key = event.why + ':' + event.text.toLowerCase();
+        rejects.set(key, {text:event.text, why:event.why.slice(0, 20), prompt: rejects.get(key)?.prompt || prompt});
       }
     }
     publish();
   }
   function attach(socket, code, eventName, snapshot) {
     const token = {};
-    owner = token; state = null; identity = ''; used = new Map();
+    owner = token; state = null; identity = ''; used = new Map(); rejects = new Map(); titles = new Map();
     socket.addEventListener(eventName, event => {
       try { ingest(JSON.parse(String(event.data)), token, code, snapshot); } catch {}
     });

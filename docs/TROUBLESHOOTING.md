@@ -24,7 +24,7 @@ Never post the key in a GitHub issue. Delete it from Settings if you no longer w
 
 ## The game rejects a suggestion
 
-The game's curated answer list is authoritative. Obscure or correct real-world answers may still be missing from it. Try another suggestion. Rejected submission attempts are remembered in the current game by this version.
+The game's curated answer list is authoritative. Obscure or correct real-world answers may still be missing from it. Try another suggestion. An answer the game rejects as not on its list is remembered for that prompt and won't be suggested again, in this game or later ones.
 
 ## Answers repeat
 

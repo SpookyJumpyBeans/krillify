@@ -7,8 +7,9 @@ export const starterBanks = {
   namesomethingthatusessteam:['Aeolipile','Cataplana','Couscoussier','Autoclave','Steam hammer','Steam whistle','Steam turbine','Pressure cooker','Espresso machine','Steam iron'],
   nameabuildingmaterial:['Mycelium','Cob','Hempcrete','Rammed earth','Pozzolan','Rammed chalk','Adobe','Bamboo','Cork','Limestone','Timber','Concrete']
 };
-// Rarity tiers Puffer Party reports for accepted answers, plus "accepted" when none was given.
-export const tiers = ['krillion', 'deepcut', 'rare', 'accepted', 'tooclever', 'schooler', 'plankton'];
+// Rarity tiers Puffer Party reports for accepted answers, plus "accepted" when none was given,
+// and "miss" for an answer the game rejected as not on its list (never suggested).
+export const tiers = ['krillion', 'deepcut', 'rare', 'accepted', 'tooclever', 'schooler', 'plankton', 'miss'];
 export function cleanCandidates(values) {
   if (!Array.isArray(values)) return [];
   const seen = new Set();
@@ -33,7 +34,7 @@ export function takeThree(pool, history, excluded = [], limit = 3, random = Math
   const open = [];
   for (const item of cleanCandidates(pool)) {
     const keys = [item.answer, ...item.aliases].map(normalize);
-    if (keys.some(key => blocked.has(key))) continue;
+    if (item.tier === 'miss' || keys.some(key => blocked.has(key))) continue;
     open.push(item);
     keys.forEach(key => blocked.add(key));
     if (open.length >= Math.max(6, limit * 2)) break;
