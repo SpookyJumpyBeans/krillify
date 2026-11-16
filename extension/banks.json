@@ -425,6 +425,25 @@
     {"answer":"sunroom","aliases":["solarium"],"note":"A room with large windows to admit sunlight."},
     {"answer":"sunup","aliases":["sunrise"],"note":"The time when the sun rises."}
   ],
+  "Name a condiment": [
+    {"answer":"harissa","aliases":["North African chili paste"],"note":"A spicy chili paste from Tunisia made with roasted red peppers and spices","tier":"deepcut"},
+    {"answer":"tahini","aliases":["sesame paste"],"note":"A Middle Eastern condiment made from ground sesame seeds","tier":"rare"},
+    {"answer":"chutney","aliases":["fruit or vegetable relish"],"note":"A condiment from Indian cuisine usually made of fruits or vegetables with spices"},
+    {"answer":"zhug","aliases":["sahawiq"],"note":"A spicy Yemeni hot sauce made of fresh hot peppers and herbs"},
+    {"answer":"ajvar","aliases":["pepper-based relish"],"note":"A Balkan condiment made from red bell peppers and eggplants"},
+    {"answer":"ponzu","aliases":["citrus soy sauce"],"note":"A Japanese citrus-based sauce commonly used as a dip or dressing"},
+    {"answer":"sambal","aliases":["Indonesian chili paste"],"note":"A spicy chili paste or sauce from Indonesia"},
+    {"answer":"zapiekanka sauce","aliases":["Polish street food sauce"],"note":"A type of mushroom or ketchup-based sauce used on Polish zapiekanka sandwiches"},
+    {"answer":"marmite","aliases":["yeast extract spread"],"note":"A savory spread made from yeast extract, popular in the UK and New Zealand"},
+    {"answer":"pickle","aliases":["pickled condiment"],"note":"Vegetables or fruits preserved in brine or vinegar used as a condiment"},
+    {"answer":"skordalia","aliases":["Greek garlic sauce"],"note":"A thick Greek puree of garlic mixed with potatoes or nuts and olive oil"},
+    {"answer":"chimichurri","aliases":["Argentinian herb sauce"],"note":"A green sauce from Argentina made of parsley, garlic, vinegar, and oil"},
+    {"answer":"zhoug","aliases":["Yemeni green chili sauce"],"note":"A hot green chili sauce popular in Middle Eastern cuisine"},
+    {"answer":"biber salçası","aliases":["Turkish pepper paste"],"note":"A concentrated paste made from ground red peppers, common in Turkish cuisine"},
+    {"answer":"satsivi","aliases":["Georgian walnut sauce"],"note":"A rich Georgian sauce made from walnuts, garlic, and spices often served as a condiment"},
+    {"answer":"guasacaca","aliases":["Venezuelan avocado sauce"],"note":"A Venezuelan avocado-based sauce similar to guacamole used as a condiment"},
+    {"answer":"Mayonnaise","tier":"plankton"}
+  ],
   "Name a contraction (like “don’t”)": [
     {"answer":"ne'er","aliases":["never"],"note":"archaic contraction commonly used in poetry or older English, short for 'never'"},
     {"answer":"e'er","aliases":["ever"],"note":"poetic contraction of 'ever'"},
@@ -687,6 +706,20 @@
     {"answer":"Chile","note":"Country with numerous active volcanoes, including Villarrica."},
     {"answer":"Indonesia","note":"Country with many active volcanoes such as Merapi."},
     {"answer":"Japan","note":"Country with active volcanoes like Sakurajima."}
+  ],
+  "Name a country with exactly three colors on its flag": [
+    {"answer":"Mozambique","note":"Flag with green, black, yellow, white, red, but mainly three prominent colors in description; however, officially six colors, so may not fit perfectly"},
+    {"answer":"Mauritius","note":"Flag with four colors, so excluded due to four colors."},
+    {"answer":"Chad","note":"Flag with exactly three colors: blue, yellow, red vertical stripes."},
+    {"answer":"Romania","note":"Flag with blue, yellow, red vertical stripes - exactly three colors."},
+    {"answer":"Colombia","note":"Flag with yellow, blue, red horizontal stripes; exactly three colors."},
+    {"answer":"Senegal","note":"Flag with green, yellow, red and a green star; has three basic colors."},
+    {"answer":"Hungary","note":"Flag with red, white, green horizontal stripes: exactly three colors."},
+    {"answer":"Bulgaria","note":"Flag with white, green, red horizontal stripes: exactly three colors."},
+    {"answer":"Sudan","note":"Flag with red, white, black, green, four colors; excluded."},
+    {"answer":"Namibia","note":"Flag has five colors; excluded."},
+    {"answer":"Kenya","note":"Flag with black, red, white, green; four colors - excluded."},
+    {"answer":"United States","tier":"plankton"}
   ],
   "Name a country with territory on more than one continent": [
     {"answer":"Russia","aliases":["Russian Federation"],"note":"Largest country spanning Europe and Asia"},
@@ -1158,6 +1191,30 @@
     {"answer":"ginger beer","note":"spicy, non-alcoholic carbonated beverage often used in Moscow mules"},
     {"answer":"cream of coconut","aliases":["coco lopez"],"note":"sweetened coconut cream used in tropical cocktails"},
     {"answer":"pimm's no. 1","aliases":["pimm's"],"note":"gin-based fruit cup liqueur used as mixer"}
+  ],
+  "Name a mobile phone brand": [
+    {"answer":"Vertu","aliases":["Vertu Mobile"],"note":"A luxury mobile phone manufacturer known for handcrafted devices.","tier":"deepcut"},
+    {"answer":"Gigaset","aliases":["Gigaset Mobile"],"note":"German brand originally known for cordless phones, also making smartphones.","tier":"deepcut"},
+    {"answer":"Infinix","aliases":["Infinix Mobility"],"note":"Hong Kong-based smartphone brand focusing on emerging markets.","tier":"deepcut"},
+    {"answer":"Lava","aliases":["Lava International"],"note":"Indian mobile phone manufacturer.","tier":"deepcut"},
+    {"answer":"Fairphone","aliases":["Fairphone BV"],"note":"Dutch company producing ethically sourced and modular smartphones.","tier":"deepcut"},
+    {"answer":"Wiko","aliases":["Wiko Mobile"],"note":"French smartphone brand focusing on budget devices."},
+    {"answer":"Tecno","aliases":["Tecno Mobile"],"note":"Smartphone brand popular in Africa and South Asia."},
+    {"answer":"CAT","aliases":["Caterpillar Mobile"],"note":"Brand producing rugged smartphones often used in tough environments."},
+    {"answer":"BLU","aliases":["BLU Products"],"note":"American company offering affordable smartphones."},
+    {"answer":"Micromax","aliases":["Micromax Informatics"],"note":"Indian consumer electronics company producing smartphones."},
+    {"answer":"YU","aliases":["YU Televentures"],"note":"Indian smartphone brand created as a Micromax subsidiary."},
+    {"answer":"Sharp","aliases":["Sharp Corporation"],"note":"Japanese multinational producing smartphones and electronics."},
+    {"answer":"Kyocera","aliases":["Kyocera Corporation"],"note":"Japanese company manufacturing rugged smartphones."},
+    {"answer":"Alcatel","aliases":["Alcatel Mobile"],"note":"French brand producing budget smartphones."},
+    {"answer":"ZTE","aliases":["ZTE Corporation"],"note":"Chinese multinational telecommunications equipment and smartphone company."},
+    {"answer":"Honor","aliases":["Honor Smartphone"],"note":"Brand created by Huawei focusing on mid-range and budget phones."},
+    {"answer":"Meizu","aliases":["Meizu Technology"],"note":"Chinese consumer electronics company making smartphones."},
+    {"answer":"Smartisan","aliases":["Smartisan Technology"],"note":"Chinese technology company known for smartphones with unique UI."},
+    {"answer":"BlackBerry","tier":"schooler"},
+    {"answer":"Samsung","tier":"plankton"},
+    {"answer":"Motorola","tier":"plankton"},
+    {"answer":"Apple","tier":"plankton"}
   ],
   "Name a modern country that was partly ruled by the Roman Empire (constituent countries don't count)": [
     {"answer":"Albania","aliases":["Republic of Albania"],"note":"Located in the western Balkans, parts of modern Albania were under Roman rule, including the city of Dyrrachium."},
