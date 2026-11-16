@@ -4,14 +4,16 @@ import {normalize, cleanCandidates, tiers} from './core.js';
 // the game gave them; "accepted" marks a verified answer whose tier wasn't reported.
 const rank = Object.fromEntries(tiers.map((tier, i) => [tier, [0, 1, 2, 2.5, 3, 4, 5, 99][i]]));
 const acceptedTier = tier => !!tier && tier !== 'miss';
-export const tierRank = item => rank[item?.tier] ?? 3;
+// Unverified answers (AI guesses, imported lists) rank below every verified tier: a verified
+// common answer is a sure accept, while games have rejected most unverified guesses they judged.
+export const tierRank = item => rank[item?.tier] ?? 6;
 export const cleanTier = value => {
   const tier = normalize(value);
   return tier in rank ? tier : '';
 };
 
-// Stable sort: verified rare answers move up, verified common ones move down, and unverified
-// answers keep the order the AI or bank author gave them.
+// Stable sort: verified answers first, rarest tier first; unverified answers after them in the
+// order the AI or bank author gave; rejected answers last.
 export const byRarity = list => list.map((item, index) => ({item, index}))
   .sort((a, b) => tierRank(a.item) - tierRank(b.item) || a.index - b.index).map(x => x.item);
 

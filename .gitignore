@@ -13,3 +13,4 @@ local-settings.json
 credentials.json
 .DS_Store
 Thumbs.db
+dist/

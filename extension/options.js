@@ -39,6 +39,8 @@ $('bank').addEventListener('change', async () => {
 
 // Maintainer mode: GitHub access is an optional permission, requested only when it's turned on.
 const github = {origins: ['https://api.github.com/*']};
+// Store builds don't declare the GitHub permission, so there's no maintainer mode to show.
+if (!(chrome.runtime.getManifest().optional_host_permissions || []).includes(github.origins[0])) $('maintainerPanel').hidden = true;
 async function loadMaintainer() {
   const {maintainer = {}, syncState} = await chrome.storage.local.get(['maintainer', 'syncState']);
   $('mEnabled').checked = !!maintainer.enabled; $('mRepo').value = maintainer.repo || '';

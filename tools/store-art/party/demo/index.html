@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- Store screenshot 1: the real overlay (content.js) beside a caption, with a stubbed worker.
+     Served by tools/store-art/capture.sh at /party/demo/ so the overlay shows itself. -->
+<meta charset="utf-8">
+<title>Krillify screenshot</title>
+<style>
+  @font-face{font-family:VT323;src:url(/ext/fonts/VT323.woff2) format("woff2")}
+  html,body{margin:0;height:100%}
+  body{font:20px/1.25 VT323,monospace;color:#e8f1ff;background:radial-gradient(120% 90% at 30% 0,#0d3a66 0,#071a33 60%,#050a14 100%);overflow:hidden;-webkit-font-smoothing:none}
+  .copy{position:absolute;left:88px;top:150px;width:600px}
+  h1{font-weight:400;font-size:84px;letter-spacing:14px;margin:0 0 10px}
+  h1 span{color:#4de3ff;text-shadow:0 0 18px rgba(77,227,255,.55)}
+  .tag{font-size:30px;color:#7d93b8;letter-spacing:2px;margin:0 0 46px}
+  ul{list-style:none;padding:0;margin:0}
+  li{font-size:30px;margin:0 0 22px;display:flex;gap:16px;align-items:baseline}
+  li::before{content:"";flex:none;width:12px;height:12px;background:#4de3ff;transform:translateY(-4px)}
+  .note{position:absolute;left:88px;bottom:48px;font-size:18px;color:#5d739c;letter-spacing:1px}
+  .pf-root{position:absolute;left:-9999px}
+</style>
+<body>
+<div class="copy">
+  <h1>KRILL<span>IFY</span></h1>
+  <p class="tag">Deep cuts for every Puffer Party prompt</p>
+  <ul>
+    <li>Three rare answers, right beside the game</li>
+    <li>Click one to fill the box. You press Enter.</li>
+    <li>Answers the game accepted rank first</li>
+    <li>Works without a key on banked prompts</li>
+  </ul>
+</div>
+<p class="note">Unofficial. Not affiliated with Krillion. Rarity is estimated.</p>
+<div class="pf-root">
+  <div class="pf-hud-label">CATEGORY 2</div>
+  <div class="ds-card"><div class="prompt">Name an insect</div></div>
+  <input class="ds-input" type="text">
+</div>
+<script>
+  const answers = [
+    {answer: 'Zorapteran', aliases: [], note: 'Angel insect: tiny, rarely seen order living under bark'},
+    {answer: 'Grylloblattid', aliases: [], note: 'Ice crawler found near glaciers and cold mountain slopes'},
+    {answer: 'Strepsipteran', aliases: [], note: 'Twisted-wing parasite of bees and wasps'},
+  ];
+  window.chrome = {runtime: {sendMessage: async m => {
+    if (m.type === 'status') return {enabled: true};
+    if (m.type === 'suggest') return {answers: answers.slice(0, m.want || 3), source: 'Shared bank'};
+    return {};
+  }}};
+</script>
+<script src="/ext/content.js"></script>
+</body>

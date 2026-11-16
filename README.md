@@ -1,7 +1,7 @@
 ![Krillify: deep cuts, quick picks. A glowing pufferfish in a pixel-art ocean.](assets/krillify-banner.png)
 
 <p align="center">
-  <img alt="Version 1.5.0" src="https://img.shields.io/badge/version-1.5.0-9ce8cb?style=flat-square&labelColor=102438">
+  <img alt="Version 1.6.0" src="https://img.shields.io/badge/version-1.6.0-9ce8cb?style=flat-square&labelColor=102438">
   <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%2F%20Edge-4de3ff?style=flat-square&labelColor=102438">
   <img alt="Manifest V3" src="https://img.shields.io/badge/extension-Manifest%20V3-ffd166?style=flat-square&labelColor=102438">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9ce8cb?style=flat-square&labelColor=102438">
@@ -15,6 +15,8 @@ Krillify is an unofficial Chrome/Edge companion for [Krillion's Puffer Party](ht
 
 Click a suggestion to fill the answer box, then submit it yourself. Krillify tracks your submitted answers for the current game and makes them available again in the next one.
 
+> **v1.6.0** prepares the Chrome Web Store release: verified answers now rank above every unverified guess, the shared bank covers 301 prompts, and the extension has its own icon.
+>
 > **v1.5.0** grounds the AI in game results: for each prompt it sees the answers the game accepted (with their tiers) and rejected, and is asked for real, standard names at that level of detail, facts it is sure of, and less common choices only within that list.
 >
 > **v1.4.0** learns from rejected answers: an answer the game says isn't on its list is never suggested again for that prompt, in later games or through the shared bank. Each accepted or rejected answer is now matched to its category exactly, and with the game feed connected your own submissions count only once the game accepts or rejects them.
@@ -159,6 +161,10 @@ cd tools && npm install
 node model-eval.mjs ../extension/banks.json          # dry run: prompts, calls, estimated cost
 node model-eval.mjs ../extension/banks.json --run    # calls the APIs
 ```
+
+## Chrome Web Store build
+
+`node tools/build-store.mjs` writes `dist/krillify-<version>-store.zip` and an unpacked copy in `dist/store/`. The store build uses the listing name and leaves out the GitHub permission, so maintainer mode isn't available there. `python tools/store-art/capture.py` renders the store screenshots and promo tile into `dist/store-art/`, and `python tools/make-icons.py` redraws the icons. Listing text, permission justifications and privacy answers are in [docs/STORE.md](docs/STORE.md); the privacy policy is [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Contributing
 

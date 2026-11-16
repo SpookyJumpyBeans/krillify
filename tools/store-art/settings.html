@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- Store screenshot 2: the real Settings page with a stubbed extension API and sample values. -->
+<meta charset="utf-8">
+<title>Krillify settings screenshot</title>
+<base href="/ext/">
+<link rel="stylesheet" href="options.css">
+<style>main{padding-top:40px}</style>
+<script>
+  const store = {settings: {enabled: true, apiKey: '', model: 'gpt-4.1-mini'}};
+  window.chrome = {storage: {local: {setAccessLevel: async () => {}, get: async keys => Object.fromEntries([].concat(keys).map(k => [k, store[k]])), set: async x => Object.assign(store, x)}},
+    runtime: {getManifest: () => ({version: '1.6.0'}), sendMessage: async () => ({})}, permissions: {request: async () => true, remove: async () => true}};
+</script>
+<body></body>
+<script>
+  // Pull in the real page body so the screenshot always matches options.html.
+  fetch('options.html').then(r => r.text()).then(html => {
+    document.body.innerHTML = new DOMParser().parseFromString(html, 'text/html').querySelector('main').outerHTML;
+    const s = document.createElement('script'); s.type = 'module'; s.src = 'options.js'; document.body.append(s);
+  });
+</script>

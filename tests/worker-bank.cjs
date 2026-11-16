@@ -11,7 +11,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 
  // Verified tiers reorder the pool: rare finds rise, common ones sink, the rest keep their order.
  const seen={prompt:'Name a fish',answers:{cod:{answer:'Cod',tier:'plankton'},oarfish:{answer:'Oarfish',tier:'deepcut'},ide:{answer:'Ide',tier:''}}};
- assert.deepEqual(combinePool([['Cod','Burbot','Oarfish','Wels']],seen).map(x=>x.answer+(x.tier?':'+x.tier:'')),['Oarfish:deepcut','Ide:accepted','Burbot','Wels','Cod:plankton']);
+ assert.deepEqual(combinePool([['Cod','Burbot','Oarfish','Wels']],seen).map(x=>x.answer+(x.tier?':'+x.tier:'')),['Oarfish:deepcut','Ide:accepted','Cod:plankton','Burbot','Wels']);
  assert.deepEqual(cleanCandidates([{answer:'X',tier:'Deep Cut'},{answer:'Y',tier:'bogus'}]).map(x=>x.tier),['deepcut',undefined]);
 
  // Merging local AI results and verified answers into the committed bank.
@@ -20,10 +20,10 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
   'q:imported':{prompt:'Imported',source:'imported bank',answers:['Skip me']}};
  const merged=mergeBank(remote,pools,{'q:nameafish':seen});
  assert.deepEqual(Object.keys(merged.bank),['Name a fish']);
- assert.deepEqual(merged.bank['Name a fish'].map(x=>x.answer),['Oarfish','Ide','Burbot','Wels','Cod']);
- assert.deepEqual(merged.bank['Name a fish'][2].aliases,['Eelpout']);assert.equal(merged.bank['Name a fish'][2].note,'Freshwater cod');
+ assert.deepEqual(merged.bank['Name a fish'].map(x=>x.answer),['Oarfish','Ide','Cod','Burbot','Wels']);
+ assert.deepEqual(merged.bank['Name a fish'][3].aliases,['Eelpout']);assert.equal(merged.bank['Name a fish'][3].note,'Freshwater cod');
  assert.equal(merged.prompts,0);assert.equal(merged.answers,4);
- const text=serializeBank(merged.bank);assert.deepEqual(indexBank(JSON.parse(text)).get('nameafish').answers.map(x=>x.answer),['Oarfish','Ide','Burbot','Wels','Cod']);
+ const text=serializeBank(merged.bank);assert.deepEqual(indexBank(JSON.parse(text)).get('nameafish').answers.map(x=>x.answer),['Oarfish','Ide','Cod','Burbot','Wels']);
  assert.equal(serializeBank(mergeBank(JSON.parse(text),pools,{'q:nameafish':seen}).bank),text,'a second merge is a no-op');
 
  // Rejections ("miss"): never suggested, never added as new entries, and a verified acceptance wins.
