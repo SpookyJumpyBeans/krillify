@@ -256,6 +256,26 @@
     {"answer":"neon","aliases":["Ne"],"note":"a noble gas used in neon lighting"},
     {"answer":"argon","aliases":["Ar"],"note":"a noble gas used in inert atmospheres"}
   ],
+  "Name a chemical element whose name ends in -ium": [
+    {"answer":"lutetium","aliases":["Lu"],"note":"A rare earth metal with atomic number 71","tier":"deepcut"},
+    {"answer":"hafnium","aliases":["Hf"],"note":"A transition metal used in semiconductor manufacturing, atomic number 72","tier":"deepcut"},
+    {"answer":"thulium","aliases":["Tm"],"note":"A lanthanide element with atomic number 69"},
+    {"answer":"rhodium","aliases":["Rh"],"note":"A rare, silvery-white, hard metal, atomic number 45"},
+    {"answer":"indium","aliases":["In"],"note":"A post-transition metal, atomic number 49"},
+    {"answer":"gallium","aliases":["Ga"],"note":"A soft, silvery metal that melts near room temperature, atomic number 31"},
+    {"answer":"erbium","aliases":["Er"],"note":"A lanthanide used in lasers, atomic number 68"},
+    {"answer":"curium","aliases":["Cm"],"note":"An actinide named after Marie Curie, atomic number 96"},
+    {"answer":"actinium","aliases":["Ac"],"note":"A radioactive actinide, atomic number 89"},
+    {"answer":"darmstadtium","aliases":["Ds"],"note":"A synthetic element, atomic number 110"},
+    {"answer":"bohrium","aliases":["Bh"],"note":"A synthetic transactinide element, atomic number 107"},
+    {"answer":"meitnerium","aliases":["Mt"],"note":"A synthetic element named after Lise Meitner, atomic number 109"},
+    {"answer":"roentgenium","aliases":["Rg"],"note":"A synthetic element named after Wilhelm Röntgen, atomic number 111"},
+    {"answer":"seaborgium","aliases":["Sg"],"note":"A synthetic transactinide element, atomic number 106"},
+    {"answer":"cadmium","aliases":["Cd"],"note":"A soft, bluish-white metal, atomic number 48","tier":"schooler"},
+    {"answer":"Sodium","tier":"plankton"},
+    {"answer":"Potassium","tier":"plankton"},
+    {"answer":"Lithium","tier":"plankton"}
+  ],
   "Name a Christmas movie": [
     {"answer":"Rare Exports: A Christmas Tale","note":"Finnish dark fantasy Christmas film"},
     {"answer":"Joyeux Noël","aliases":["Merry Christmas"],"note":"World War I Christmas truce drama"},
@@ -741,6 +761,26 @@
     {"answer":"Chile","note":"Country with numerous active volcanoes, including Villarrica."},
     {"answer":"Indonesia","note":"Country with many active volcanoes such as Merapi."},
     {"answer":"Japan","note":"Country with active volcanoes like Sakurajima."}
+  ],
+  "Name a country with coastlines on at least two oceans": [
+    {"answer":"Panama","note":"Bordered by the Pacific Ocean and the Caribbean Sea (Atlantic Ocean basin)"},
+    {"answer":"Russia","note":"Borders the Arctic Ocean and Pacific Ocean"},
+    {"answer":"Chile","note":"Has coastlines on the Pacific Ocean and claims in Antarctica with proximity to the Atlantic sector"},
+    {"answer":"Colombia","note":"Coasts on both Pacific Ocean and Caribbean Sea (Atlantic basin)"},
+    {"answer":"Mexico","note":"Borders the Pacific Ocean and Gulf of Mexico (Atlantic basin)"},
+    {"answer":"Norway","note":"Coasts on the Atlantic Ocean and Arctic Ocean"},
+    {"answer":"Egypt","note":"Coasts on the Mediterranean Sea and Red Sea (Mediterranean connects to the Atlantic; Red Sea connects to Indian Ocean)"},
+    {"answer":"Morocco","note":"Has coastlines on the Atlantic Ocean and Mediterranean Sea"},
+    {"answer":"France","note":"Mainland borders the Atlantic Ocean and Mediterranean Sea"},
+    {"answer":"Djibouti","note":"Has coastlines on the Red Sea and Gulf of Aden (part of Indian Ocean)"},
+    {"answer":"Indonesia","note":"Between the Indian Ocean and Pacific Ocean"},
+    {"answer":"Oman","note":"Has coastlines on the Arabian Sea (Indian Ocean) and the Gulf of Oman (connected to the Gulf and Arabian Sea)"},
+    {"answer":"Somalia","note":"Borders the Gulf of Aden and Indian Ocean"},
+    {"answer":"New Zealand","note":"Borders the Pacific Ocean and Southern Ocean"},
+    {"answer":"South Africa","note":"Borders the Atlantic Ocean and Indian Ocean","tier":"schooler"},
+    {"answer":"Canada","note":"Has coastlines on the Atlantic, Pacific, and Arctic Oceans","tier":"schooler"},
+    {"answer":"United States","aliases":["USA"],"note":"Has coastlines on the Atlantic and Pacific Oceans","tier":"plankton"},
+    {"answer":"Australia","note":"Has coastlines on the Indian and Pacific Oceans","tier":"plankton"}
   ],
   "Name a country with exactly three colors on its flag": [
     {"answer":"Mozambique","note":"Flag with green, black, yellow, white, red, but mainly three prominent colors in description; however, officially six colors, so may not fit perfectly"},
